@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard 1: Teaching Load 4-Year Trend</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.26.0/plotly.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #f5f7fa;
+            padding: 20px;
+        }
+        .container { max-width: 1400px; margin: 0 auto; }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .header h1 { font-size: 2em; margin-bottom: 10px; }
+        .back-btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            transition: all 0.3s;
+        }
+        .back-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateX(-5px);
+        }
+        .section {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+        .section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 15px;
+        }
+        .chart-container {
+            height: 500px;
+            margin-bottom: 30px;
+        }
+        .filter-group {
+            margin-bottom: 25px;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .filter-group label {
+            font-weight: 600;
+            color: #333;
+        }
+        select {
+            padding: 10px 15px;
+            border: 2px solid #667eea;
+            border-radius: 6px;
+            font-size: 1em;
+            cursor: pointer;
+            background: white;
+            color: #333;
+        }
+        select:hover {
+            border-color: #764ba2;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .stat-box {
+            background: linear-gradient(135deg, #f5f7fa 0%, #fff 100%);
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+        .stat-label { font-size: 0.85em; color: #666; text-transform: uppercase; }
+        .stat-value { font-size: 1.8em; font-weight: 700; color: #333; margin-top: 5px; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        th {
+            background: #667eea;
+            color: white;
+            font-weight: 600;
+        }
+        tr:hover {
+            background: #f9f9f9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="Dashboard_Executive.html" class="back-btn">← Quay lại Executive Dashboard</a>
+        
+        <div class="header">
+            <h1>📊 Dashboard 1: Teaching Load 4-Year Trend</h1>
+            <p>Xu hướng giờ giảng 2022-2026: Toàn Trường / Khoa / Cá Nhân</p>
+        </div>
+
+        <div class="section">
+            <h2>Tổng Quan Toàn Trường</h2>
+            <div class="chart-container">
+                <div id="schoolTrendChart"></div>
+            </div>
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <div class="stat-label">Số GV (25-26)</div>
+                    <div class="stat-value">728</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Tăng từ 22-23</div>
+                    <div class="stat-value">+60 (+9%)</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Giờ Quy Đổi (25-26)</div>
+                    <div class="stat-value">689.7K</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Median Giờ/GV</div>
+                    <div class="stat-value">411.8</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Xu Hướng Theo Khoa</h2>
+            <div class="filter-group">
+                <label for="facultySelect">Chọn Khoa:</label>
+                <select id="facultySelect">
+                    <option value="all">Tất Cả Khoa</option>
+                    <option value="Khoa Công nghệ thông tin">Khoa Công nghệ thông tin</option>
+                    <option value="Khoa Hóa học">Khoa Hóa học</option>
+                    <option value="Khoa Khoa học liên ngành">Khoa Khoa học liên ngành</option>
+                    <option value="Khoa Khoa học và Công nghệ Vật liệu">Khoa Khoa học và Công nghệ Vật liệu</option>
+                    <option value="Khoa Môi trường">Khoa Môi trường</option>
+                    <option value="Khoa Sinh học - Công nghệ Sinh học">Khoa Sinh học - Công nghệ Sinh học</option>
+                    <option value="Khoa Toán - Tin học">Khoa Toán - Tin học</option>
+                    <option value="Khoa Vật lý - Vật lý Kỹ thuật">Khoa Vật lý - Vật lý Kỹ thuật</option>
+                    <option value="Khoa Điện tử Viễn thông">Khoa Điện tử Viễn thông</option>
+                    <option value="Khoa Địa chất">Khoa Địa chất</option>
+                </select>
+            </div>
+            <div class="chart-container">
+                <div id="facultyTrendChart"></div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Bảng Dữ Liệu Chi Tiết - Toàn Trường</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Năm Học</th>
+                        <th>Số GV</th>
+                        <th>Tổng Giờ Thực Dạy</th>
+                        <th>Tổng Giờ Quy Đổi</th>
+                        <th>Median Giờ/GV</th>
+                        <th>P90</th>
+                        <th>Avg Giờ/GV</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>22-23</td>
+                        <td>668</td>
+                        <td>601,829</td>
+                        <td>687,224</td>
+                        <td>386.4</td>
+                        <td>842.0</td>
+                        <td>628.7</td>
+                    </tr>
+                    <tr>
+                        <td>23-24</td>
+                        <td>689</td>
+                        <td>589,837</td>
+                        <td>661,414</td>
+                        <td>367.7</td>
+                        <td>801.0</td>
+                        <td>597.3</td>
+                    </tr>
+                    <tr>
+                        <td>24-25</td>
+                        <td>706</td>
+                        <td>628,034</td>
+                        <td>695,039</td>
+                        <td>373.5</td>
+                        <td>845.0</td>
+                        <td>615.9</td>
+                    </tr>
+                    <tr style="background: #f0f0ff; font-weight: 600;">
+                        <td>25-26</td>
+                        <td>728</td>
+                        <td>660,935</td>
+                        <td>689,659</td>
+                        <td>411.8</td>
+                        <td>907.4</td>
+                        <td>631.0</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="section">
+            <h2>Phân Tích & Nhận Xét</h2>
+            <div style="line-height: 1.8; color: #555;">
+                <p><strong>📈 Xu Hướng Tích Cực:</strong></p>
+                <ul style="margin-left: 20px; margin-bottom: 20px;">
+                    <li>Số lượng GV tăng liên tục: 668 → 728 (+60 người, +9%)</li>
+                    <li>Median giờ/GV tăng mạnh năm 25-26: 373.5 → 411.8 (+10.2%)</li>
+                    <li>Tổng giờ quy đổi ổn định quanh 680-695K</li>
+                </ul>
+                
+                <p><strong>⚠️ Điểm Cảnh Báo:</strong></p>
+                <ul style="margin-left: 20px;">
+                    <li>P90 tăng đáng kể: 842h → 907.4h (+7.8%) - Tải nặng ở top 10%</li>
+                    <li>Phân bố tải không đều - 27.7% rơi vào very-high workload</li>
+                    <li>Một số khoa có biến động >15% YoY (cần điều chỉnh chiến lược)</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const years = ['22-23', '23-24', '24-25', '25-26'];
+        const schoolData = {
+            numFaculty: [668, 689, 706, 728],
+            totalHours: [601829, 589837, 628034, 660935],
+            equivalentHours: [687224, 661414, 695039, 689659],
+            median: [386.4, 367.7, 373.5, 411.8],
+            p90: [842, 801, 845, 907.4],
+            avg: [628.7, 597.3, 615.9, 631.0]
+        };
+
+        // School-wide trend
+        const trace1 = {
+            x: years,
+            y: schoolData.avg,
+            name: 'Avg Giờ/GV',
+            type: 'scatter',
+            mode: 'lines+markers',
+            line: { color: '#667eea', width: 3 },
+            marker: { size: 10 }
+        };
+
+        const trace2 = {
+            x: years,
+            y: schoolData.median,
+            name: 'Median Giờ/GV',
+            type: 'scatter',
+            mode: 'lines+markers',
+            line: { color: '#51cf66', width: 2 },
+            marker: { size: 8 }
+        };
+
+        const trace3 = {
+            x: years,
+            y: schoolData.p90,
+            name: 'P90 (Giờ/GV)',
+            type: 'scatter',
+            mode: 'lines+markers',
+            line: { color: '#ff6b6b', width: 2, dash: 'dash' },
+            marker: { size: 8 }
+        };
+
+        const layout = {
+            title: 'Xu Hướng 4 Năm: Giờ Giảng Dạy',
+            hovermode: 'x unified',
+            plot_bgcolor: 'rgba(0,0,0,0)',
+            paper_bgcolor: 'white',
+            xaxis: { title: 'Năm Học' },
+            yaxis: { title: 'Giờ/GV' },
+            legend: { x: 0.1, y: 0.9 }
+        };
+
+        Plotly.newPlot('schoolTrendChart', [trace1, trace2, trace3], layout, { responsive: true });
+
+        // Faculty trends - Only KHOA (faculties, no departments)
+        const facultyTrends = {
+            'Khoa Công nghệ thông tin': { '22-23': 659.0, '23-24': 645.1, '24-25': 641.3, '25-26': 599.6 },
+            'Khoa Hóa học': { '22-23': 713.8, '23-24': 650.3, '24-25': 602.5, '25-26': 611.4 },
+            'Khoa Khoa học liên ngành': { '22-23': 142.2, '23-24': 124.0, '24-25': 124.4, '25-26': 100.0 },
+            'Khoa Khoa học và Công nghệ Vật liệu': { '22-23': 246.0, '23-24': 258.4, '24-25': 365.4, '25-26': 384.0 },
+            'Khoa Môi trường': { '22-23': 309.0, '23-24': 333.3, '24-25': 403.5, '25-26': 462.7 },
+            'Khoa Sinh học - Công nghệ Sinh học': { '22-23': 373.5, '23-24': 331.7, '24-25': 324.3, '25-26': 337.7 },
+            'Khoa Toán - Tin học': { '22-23': 638.9, '23-24': 696.6, '24-25': 661.8, '25-26': 672.8 },
+            'Khoa Vật lý - Vật lý Kỹ thuật': { '22-23': 316.4, '23-24': 338.6, '24-25': 382.8, '25-26': 421.7 },
+            'Khoa Điện tử Viễn thông': { '22-23': 921.4, '23-24': 758.0, '24-25': 669.9, '25-26': 607.7 },
+            'Khoa Địa chất': { '22-23': 228.0, '23-24': 197.2, '24-25': 213.3, '25-26': 179.4 },
+        };
+
+        document.getElementById('facultySelect').addEventListener('change', function() {
+            const selected = this.value;
+            let data = [];
+            
+            if (selected === 'all') {
+                // Show all faculties
+                Object.keys(facultyTrends).forEach(faculty => {
+                    data.push({
+                        x: years,
+                        y: years.map(y => facultyTrends[faculty][y]),
+                        name: faculty,
+                        type: 'scatter',
+                        mode: 'lines+markers'
+                    });
+                });
+            } else {
+                data.push({
+                    x: years,
+                    y: years.map(y => facultyTrends[selected][y]),
+                    name: selected,
+                    type: 'scatter',
+                    mode: 'lines+markers',
+                    line: { color: '#667eea', width: 3 },
+                    marker: { size: 10 }
+                });
+            }
+
+            const layout2 = {
+                title: selected === 'all' ? 'Xu Hướng Tất Cả Khoa' : `Xu Hướng: ${selected}`,
+                hovermode: 'x unified',
+                xaxis: { title: 'Năm Học' },
+                yaxis: { title: 'Giờ/GV' }
+            };
+
+            Plotly.newPlot('facultyTrendChart', data, layout2, { responsive: true });
+        });
+
+        // Initialize with all faculties
+        document.getElementById('facultySelect').dispatchEvent(new Event('change'));
+    </script>
+</body>
+</html>

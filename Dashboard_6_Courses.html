@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard 6: Số Lượng Môn Học</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.26.0/plotly.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #f5f7fa;
+            padding: 20px;
+        }
+        .container { max-width: 1400px; margin: 0 auto; }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        .header h1 { font-size: 2em; margin-bottom: 10px; }
+        .back-btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+        .section {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+        .section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 15px;
+        }
+        .chart-container { height: 500px; margin-bottom: 20px; }
+        .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+        @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #eee; }
+        th { background: #667eea; color: white; font-weight: 600; }
+        tr:hover { background: #f9f9f9; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="Dashboard_Executive.html" class="back-btn">← Quay lại</a>
+        
+        <div class="header">
+            <h1>📚 Dashboard 6: Số Lượng Môn Học Giảng Dạy</h1>
+            <p>Đa Dạng Môn Học & Tải Giảng Dạy Theo Khoa/Phòng (2025-26)</p>
+        </div>
+
+        <div class="section">
+            <h2>Tổng Quan: Số Môn Học & Giờ Giảng Dạy</h2>
+            <div class="chart-container">
+                <div id="courseHoursScatter"></div>
+            </div>
+        </div>
+
+        <div class="grid">
+            <div class="section">
+                <h2>10 Khoa: Số Môn Học</h2>
+                <div class="chart-container">
+                    <div id="courseCountChart"></div>
+                </div>
+            </div>
+            <div class="section">
+                <h2>10 Khoa: Giờ Giảng Dạy</h2>
+                <div class="chart-container">
+                    <div id="hoursByFacultyChart"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Phân Tích Chi Tiết: 10 Khoa (2025-26)</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 5%;">STT</th>
+                        <th style="width: 35%;">Khoa</th>
+                        <th style="width: 15%;">Số Môn</th>
+                        <th style="width: 15%;">Tổng Giờ</th>
+                        <th style="width: 15%;">Giờ/Môn</th>
+                        <th style="width: 15%;">GV/Môn</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>Khoa Sinh học - Công nghệ Sinh học</td>
+                        <td><strong>200</strong></td>
+                        <td>37,143.9</td>
+                        <td>185.7</td>
+                        <td>0.55</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>Khoa Vật lý - Vật lý Kỹ thuật</td>
+                        <td><strong>198</strong></td>
+                        <td>44,275.9</td>
+                        <td>223.6</td>
+                        <td>0.53</td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>Khoa Toán - Tin học</td>
+                        <td><strong>172</strong></td>
+                        <td>46,424.1</td>
+                        <td>269.8</td>
+                        <td>0.40</td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td>Khoa Hóa học</td>
+                        <td><strong>161</strong></td>
+                        <td>56,864.3</td>
+                        <td>353.2</td>
+                        <td>0.58</td>
+                    </tr>
+                    <tr>
+                        <td>5</td>
+                        <td>Khoa Công nghệ thông tin</td>
+                        <td><strong>160</strong></td>
+                        <td>71,348.8</td>
+                        <td>445.9</td>
+                        <td>0.74</td>
+                    </tr>
+                    <tr>
+                        <td>6</td>
+                        <td>Khoa Môi trường</td>
+                        <td><strong>150</strong></td>
+                        <td>19,435.1</td>
+                        <td>129.6</td>
+                        <td>0.57</td>
+                    </tr>
+                    <tr>
+                        <td>7</td>
+                        <td>Khoa Điện tử Viễn thông</td>
+                        <td><strong>138</strong></td>
+                        <td>27,345.5</td>
+                        <td>198.2</td>
+                        <td>0.51</td>
+                    </tr>
+                    <tr>
+                        <td>8</td>
+                        <td>Khoa Khoa học và Công nghệ Vật liệu</td>
+                        <td><strong>121</strong></td>
+                        <td>17,278.9</td>
+                        <td>142.8</td>
+                        <td>0.37</td>
+                    </tr>
+                    <tr>
+                        <td>9</td>
+                        <td>Khoa Địa chất</td>
+                        <td><strong>57</strong></td>
+                        <td>4,485.4</td>
+                        <td>78.7</td>
+                        <td>0.44</td>
+                    </tr>
+                    <tr>
+                        <td>10</td>
+                        <td>Khoa Khoa học liên ngành</td>
+                        <td><strong>28</strong></td>
+                        <td>1,700.0</td>
+                        <td>60.7</td>
+                        <td>0.61</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="section">
+            <h2>Chỉ Số Đa Dạng: Môn/GV & Giờ/Môn</h2>
+            <div class="chart-container">
+                <div id="diversityChart"></div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Phân Tích & Khuyến Nghị</h2>
+            <div style="line-height: 1.8; color: #555;">
+                <p><strong>📌 Nhân Xét Chung (2025-26):</strong></p>
+                <ul style="margin-left: 20px; margin-bottom: 15px;">
+                    <li><strong>Toàn Trường 2025-26:</strong> 1,185 môn học được dạy bởi 728 GV (10 Khoa)</li>
+                    <li><strong>Trung bình:</strong> 1.63 môn/GV, 228.0 giờ/môn</li>
+                    <li>Khoa lớn có rất nhiều môn (160-200 môn), khoa nhỏ chỉ có 28-57 môn</li>
+                </ul>
+
+                <p><strong>🎯 Khoa Có Cơ Cấu Khóa Học Phong Phú (200+ Môn):</strong></p>
+                <ul style="margin-left: 20px; margin-bottom: 15px;">
+                    <li><strong>Khoa Sinh học - CN Sinh Học:</strong> 200 môn, 110 GV - Chương trình đa dạng, nhưng tải trung bình chỉ 185.7 giờ/môn</li>
+                    <li><strong>Khoa Vật lý - Vật lý Kỹ thuật:</strong> 198 môn, 105 GV - Lớn nhất, 223.6 giờ/môn</li>
+                    <li><strong>Khoa Công nghệ thông tin:</strong> 160 môn, 119 GV - Tải cao nhất: 445.9 giờ/môn</li>
+                </ul>
+
+                <p><strong>⚠️ Khoa Cần Chú Ý (Ít Môn hoặc Tải Thấp):</strong></p>
+                <ul style="margin-left: 20px; margin-bottom: 15px;">
+                    <li><strong>Khoa Khoa Học Liên Ngành:</strong> Chỉ 28 môn cho 17 GV (1.65 môn/GV) - Chương trình quá chuyên biệt</li>
+                    <li><strong>Khoa Địa Chất:</strong> 57 môn, 25 GV (2.28 môn/GV) - Tải thấp nhất: 78.7 giờ/môn</li>
+                    <li><strong>Khoa Khoa học & CN Vật liệu:</strong> 121 môn, tải 142.8 giờ/môn - Cần xem xét tái cấu trúc</li>
+                </ul>
+
+                <p><strong>💡 Khuyến Nghị Kế Tiếp:</strong></p>
+                <ul style="margin-left: 20px;">
+                    <li>Phân tích độ chồng chéo môn học giữa các khoa để tối ưu hóa tải</li>
+                    <li>Xem xét hợp tác giảng dạy giữa khoa lớn (CNTT, Sinh, Vật lý) với khoa nhỏ (Địa chất, KH Liên ngành)</li>
+                    <li>Đánh giá nhu cầu tuyển dụng dựa trên độ phức tạp môn học (giờ/môn)</li>
+                    <li>Khoa CNTT cần xem xét tăng nhân lực do tải cao (445.9 giờ/môn)</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Real data from Excel (2025-26)
+        const scatterData = [
+            { faculty: 'Sinh', courses: 200, hours: 37143.9, faculty_size: 110 },
+            { faculty: 'Vật lý', courses: 198, hours: 44275.9, faculty_size: 105 },
+            { faculty: 'Toán-TH', courses: 172, hours: 46424.1, faculty_size: 69 },
+            { faculty: 'Hóa', courses: 161, hours: 56864.3, faculty_size: 93 },
+            { faculty: 'CNTT', courses: 160, hours: 71348.8, faculty_size: 119 },
+            { faculty: 'Môi trường', courses: 150, hours: 19435.1, faculty_size: 42 },
+            { faculty: 'ĐT-VT', courses: 138, hours: 27345.5, faculty_size: 45 },
+            { faculty: 'Vật liệu', courses: 121, hours: 17278.9, faculty_size: 45 },
+            { faculty: 'Địa chất', courses: 57, hours: 4485.4, faculty_size: 25 },
+            { faculty: 'KH Liên', courses: 28, hours: 1700.0, faculty_size: 17 }
+        ];
+
+        const scatterTrace = {
+            x: scatterData.map(d => d.courses),
+            y: scatterData.map(d => d.hours),
+            text: scatterData.map(d => d.faculty),
+            mode: 'markers+text',
+            type: 'scatter',
+            textposition: 'top center',
+            marker: {
+                size: scatterData.map(d => Math.sqrt(d.faculty_size) * 2.5),
+                color: scatterData.map(d => d.courses),
+                colorscale: 'Viridis',
+                showscale: true,
+                colorbar: { title: 'Số Môn' }
+            }
+        };
+
+        const scatterLayout = {
+            title: 'Số Môn Học vs Giờ Giảng Dạy (Bubble = Số GV)',
+            xaxis: { title: 'Số Môn Học' },
+            yaxis: { title: 'Tổng Giờ Quy Đổi' },
+            hovermode: 'closest'
+        };
+
+        Plotly.newPlot('courseHoursScatter', [scatterTrace], scatterLayout, { responsive: true });
+
+        // Course count (real data)
+        const courseCountFaculties = ['Sinh', 'Vật lý', 'Toán-TH', 'Hóa', 'CNTT', 'Môi trường', 'ĐT-VT', 'Vật liệu', 'Địa chất', 'KH Liên'];
+        const courseCountValues = [200, 198, 172, 161, 160, 150, 138, 121, 57, 28];
+
+        const courseCountTrace = {
+            x: courseCountFaculties,
+            y: courseCountValues,
+            type: 'bar',
+            marker: { color: '#667eea' }
+        };
+
+        const courseCountLayout = {
+            title: 'Số Môn Học - 10 Khoa (2025-26)',
+            xaxis: { tickangle: -45 },
+            yaxis: { title: 'Số Môn' },
+            margin: { b: 120 }
+        };
+
+        Plotly.newPlot('courseCountChart', [courseCountTrace], courseCountLayout, { responsive: true });
+
+        // Hours by faculty (real data)
+        const hoursFaculties = ['CNTT', 'Hóa', 'Vật lý', 'Toán-TH', 'Sinh', 'Môi trường', 'ĐT-VT', 'Vật liệu', 'Địa chất', 'KH Liên'];
+        const hoursValues = [71348.8, 56864.3, 44275.9, 46424.1, 37143.9, 19435.1, 27345.5, 17278.9, 4485.4, 1700.0];
+
+        const hoursTrace = {
+            x: hoursFaculties,
+            y: hoursValues,
+            type: 'bar',
+            marker: { color: '#51cf66' }
+        };
+
+        const hoursLayout = {
+            title: 'Tổng Giờ Giảng Dạy - 10 Khoa (2025-26)',
+            xaxis: { tickangle: -45 },
+            yaxis: { title: 'Giờ Quy Đổi' },
+            margin: { b: 120 }
+        };
+
+        Plotly.newPlot('hoursByFacultyChart', [hoursTrace], hoursLayout, { responsive: true });
+
+        // Diversity: Courses per GV & Hours per Course (calculated from real data)
+        const diversityFaculties = ['Sinh', 'Vật lý', 'Toán-TH', 'Hóa', 'CNTT', 'Môi trường', 'ĐT-VT', 'Vật liệu', 'Địa chất', 'KH Liên'];
+        const coursesPerGV = [200/110, 198/105, 172/69, 161/93, 160/119, 150/42, 138/45, 121/45, 57/25, 28/17];
+        const hoursPerCourse = [37143.9/200, 44275.9/198, 46424.1/172, 56864.3/161, 71348.8/160, 19435.1/150, 27345.5/138, 17278.9/121, 4485.4/57, 1700.0/28];
+
+        const cpgTrace = {
+            x: diversityFaculties,
+            y: coursesPerGV,
+            name: 'Môn/GV',
+            type: 'scatter',
+            mode: 'lines+markers',
+            line: { color: '#667eea', width: 2 },
+            marker: { size: 8 },
+            yaxis: 'y1'
+        };
+
+        const hpcTrace = {
+            x: diversityFaculties,
+            y: hoursPerCourse,
+            name: 'Giờ/Môn',
+            type: 'scatter',
+            mode: 'lines+markers',
+            line: { color: '#ff6b6b', width: 2 },
+            marker: { size: 8 },
+            yaxis: 'y2'
+        };
+
+        const diversityLayout = {
+            title: 'Chỉ Số Đa Dạng: Môn/GV & Giờ/Môn',
+            xaxis: { title: 'Khoa', tickangle: -45 },
+            yaxis: { title: 'Môn/GV', titlefont: { color: '#667eea' }, tickfont: { color: '#667eea' } },
+            yaxis2: { title: 'Giờ/Môn', overlaying: 'y', side: 'right', titlefont: { color: '#ff6b6b' }, tickfont: { color: '#ff6b6b' } },
+            hovermode: 'x unified',
+            margin: { b: 120 }
+        };
+
+        Plotly.newPlot('diversityChart', [cpgTrace, hpcTrace], diversityLayout, { responsive: true });
+    </script>
+</body>
+</html>

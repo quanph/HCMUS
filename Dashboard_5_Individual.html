@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard 5: Individual 360° Workload</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.26.0/plotly.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #f5f7fa;
+            padding: 20px;
+        }
+        .container { max-width: 1400px; margin: 0 auto; }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        .header h1 { font-size: 2em; margin-bottom: 10px; }
+        .back-btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+        .section {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+        .section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 15px;
+        }
+        .chart-container { height: 500px; margin-bottom: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #eee; }
+        th { background: #667eea; color: white; font-weight: 600; }
+        tr:hover { background: #f9f9f9; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="Dashboard_Executive.html" class="back-btn">← Quay lại</a>
+        
+        <div class="header">
+            <h1>👤 Dashboard 5: Individual 360° Academic Workload</h1>
+            <p>Khối Lượng Công Việc 360°: Đại Học + SĐH + NCKH + Quản Lý</p>
+        </div>
+
+        <div class="section">
+            <h2>CQ (Đại Học) vs CTDA (SĐH) - 2025-26</h2>
+            <div class="chart-container">
+                <div id="cqCtdaChart"></div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Xu Hướng CQ + CTDA (4 Năm 2022-2026)</h2>
+            <div class="chart-container">
+                <div id="trendChart"></div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Bảng Chi Tiết: CQ vs CTDA Theo Khoa (2025-26)</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 5%;">STT</th>
+                        <th style="width: 30%;">Khoa</th>
+                        <th style="width: 15%;">CQ (Giờ)</th>
+                        <th style="width: 15%;">CTDA (Giờ)</th>
+                        <th style="width: 15%;">Tổng (Giờ)</th>
+                        <th style="width: 20%;">% CTDA</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>Khoa Công nghệ thông tin</td>
+                        <td>37,475.4</td>
+                        <td>33,873.4</td>
+                        <td><strong>71,348.8</strong></td>
+                        <td>47.5%</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>Khoa Hóa học</td>
+                        <td>27,727.1</td>
+                        <td>29,137.2</td>
+                        <td><strong>56,864.3</strong></td>
+                        <td>51.3%</td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>Khoa Vật lý - Vật lý Kỹ thuật</td>
+                        <td>35,996.5</td>
+                        <td>8,279.4</td>
+                        <td><strong>44,275.9</strong></td>
+                        <td>18.7%</td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td>Khoa Toán - Tin học</td>
+                        <td>38,069.1</td>
+                        <td>8,355.0</td>
+                        <td><strong>46,424.1</strong></td>
+                        <td>18.0%</td>
+                    </tr>
+                    <tr>
+                        <td>5</td>
+                        <td>Khoa Sinh học - Công nghệ Sinh học</td>
+                        <td>22,765.5</td>
+                        <td>14,378.4</td>
+                        <td><strong>37,143.9</strong></td>
+                        <td>38.7%</td>
+                    </tr>
+                    <tr>
+                        <td>6</td>
+                        <td>Khoa Khoa học và Công nghệ Vật liệu</td>
+                        <td>14,923.1</td>
+                        <td>2,355.8</td>
+                        <td><strong>17,278.9</strong></td>
+                        <td>13.6%</td>
+                    </tr>
+                    <tr>
+                        <td>7</td>
+                        <td>Khoa Môi trường</td>
+                        <td>16,713.5</td>
+                        <td>2,721.6</td>
+                        <td><strong>19,435.1</strong></td>
+                        <td>14.0%</td>
+                    </tr>
+                    <tr>
+                        <td>8</td>
+                        <td>Khoa Điện tử Viễn thông</td>
+                        <td>15,944.9</td>
+                        <td>11,400.6</td>
+                        <td><strong>27,345.5</strong></td>
+                        <td>41.7%</td>
+                    </tr>
+                    <tr>
+                        <td>9</td>
+                        <td>Khoa Địa chất</td>
+                        <td>4,485.4</td>
+                        <td>0.0</td>
+                        <td><strong>4,485.4</strong></td>
+                        <td>0.0%</td>
+                    </tr>
+                    <tr>
+                        <td>10</td>
+                        <td>Khoa Khoa học liên ngành</td>
+                        <td>632.3</td>
+                        <td>1,067.7</td>
+                        <td><strong>1,700.0</strong></td>
+                        <td>62.8%</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="section">
+            <h2>Phân Tích Mức Tải Cá Nhân</h2>
+            <div style="line-height: 1.8; color: #555;">
+                <p><strong>📊 Phân Loại Mức Tải:</strong></p>
+                <ul style="margin-left: 20px; margin-bottom: 15px;">
+                    <li><strong>Very High (&gt; 617.7h):</strong> 201 GV (27.7%) - ⚠️ Cần xem xét giảm tải</li>
+                    <li><strong>High (500-617.7h):</strong> 142 GV (19.5%) - Tải nặng nhưng chấp nhận được</li>
+                    <li><strong>Normal (300-500h):</strong> 275 GV (37.8%) - Tải hợp lý</li>
+                    <li><strong>Low (&lt; 300h):</strong> 110 GV (15.1%) - 🟢 Có thể tăng tải</li>
+                </ul>
+
+                <p><strong>🎯 Các GV Cần Theo Dõi (Top 50 - Very High):</strong></p>
+                <ul style="margin-left: 20px; margin-bottom: 15px;">
+                    <li>Có nguy cơ kiệt sức, giảm chất lượng</li>
+                    <li>Cần khảo sát lý do: Chức vụ quản lý? SĐH? NCKH?</li>
+                    <li>Có thể cần bổ sung nhân lực hoặc điều chỉnh phân công</li>
+                </ul>
+
+                <p><strong>💡 Khuyến Nghị:</strong></p>
+                <ul style="margin-left: 20px;">
+                    <li>Thành lập nhóm tư vấn để đánh giá tải từng cá nhân</li>
+                    <li>Cân nhắc phân công công việc quản lý / SĐH cho các GV có tải thấp</li>
+                    <li>Tăng cường hỗ trợ (giảm số lớp, TA, TS) cho 50 GV overload hàng đầu</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // CQ vs CTDA for 2025-26
+        const faculties_2526 = [
+            'Khoa Công nghệ thông tin',
+            'Khoa Hóa học',
+            'Khoa Vật lý - Vật lý Kỹ thuật',
+            'Khoa Toán - Tin học',
+            'Khoa Sinh học - Công nghệ Sinh học',
+            'Khoa Khoa học và Công nghệ Vật liệu',
+            'Khoa Môi trường',
+            'Khoa Điện tử Viễn thông',
+            'Khoa Địa chất',
+            'Khoa Khoa học liên ngành'
+        ];
+
+        const cq_2526 = [37475.4, 27727.1, 35996.5, 38069.1, 22765.5, 14923.1, 16713.5, 15944.9, 4485.4, 632.3];
+        const ctda_2526 = [33873.4, 29137.2, 8279.4, 8355.0, 14378.4, 2355.8, 2721.6, 11400.6, 0.0, 1067.7];
+
+        const cqTrace = {
+            x: faculties_2526,
+            y: cq_2526,
+            name: 'CQ (Đại Học)',
+            type: 'bar',
+            marker: { color: '#667eea' }
+        };
+
+        const ctdaTrace = {
+            x: faculties_2526,
+            y: ctda_2526,
+            name: 'CTDA (SĐH)',
+            type: 'bar',
+            marker: { color: '#ff6b6b' }
+        };
+
+        const cqCtdaLayout = {
+            barmode: 'group',
+            title: 'CQ (Đại Học) vs CTDA (SĐH) - 2025-26',
+            xaxis: { tickangle: -45 },
+            yaxis: { title: 'Giờ Quy Đổi' },
+            margin: { b: 150 }
+        };
+
+        Plotly.newPlot('cqCtdaChart', [cqTrace, ctdaTrace], cqCtdaLayout, { responsive: true });
+
+        // Trend chart - 4 years
+        const years = ['22-23', '23-24', '24-25', '25-26'];
+        const trendData = {
+            'Khoa Công nghệ thông tin': { 'CQ': [35449.1, 34479.3, 35452.2, 37475.4], 'CTDA': [41659.6, 41000.7, 40220.5, 33873.4] },
+            'Khoa Hóa học': { 'CQ': [34101.4, 31936.0, 29242.6, 27727.1], 'CTDA': [32996.3, 29189.0, 31004.7, 29137.2] },
+            'Khoa Vật lý - Vật lý Kỹ thuật': { 'CQ': [23556.1, 25428.3, 32273.5, 35996.5], 'CTDA': [3021.4, 3351.9, 5238.9, 8279.4] },
+            'Khoa Toán - Tin học': { 'CQ': [32787.2, 37258.0, 38674.1, 38069.1], 'CTDA': [8099.5, 8021.2, 8312.2, 8355.0] }
+        };
+
+        const traces = [];
+        for (const khoa in trendData) {
+            const cqTrace = {
+                x: years,
+                y: trendData[khoa]['CQ'],
+                name: `${khoa} (CQ)`,
+                type: 'scatter',
+                mode: 'lines+markers'
+            };
+            traces.push(cqTrace);
+        }
+
+        const trendLayout = {
+            title: 'Xu Hướng CQ vs CTDA - 4 Năm (Top 4 Khoa)',
+            xaxis: { title: 'Năm Học' },
+            yaxis: { title: 'Giờ Quy Đổi' },
+            hovermode: 'x unified'
+        };
+
+        Plotly.newPlot('trendChart', traces, trendLayout, { responsive: true });
+    </script>
+</body>
+</html>

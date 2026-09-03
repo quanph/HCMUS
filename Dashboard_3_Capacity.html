@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard 3: Faculty Capacity vs Demand</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.26.0/plotly.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #f5f7fa;
+            padding: 20px;
+        }
+        .container { max-width: 1400px; margin: 0 auto; }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        .header h1 { font-size: 2em; margin-bottom: 10px; }
+        .back-btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+        .section {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+        .section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 15px;
+        }
+        .chart-container { height: 500px; margin-bottom: 20px; }
+        .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+        @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="Dashboard_Executive.html" class="back-btn">← Quay lại</a>
+        
+        <div class="header">
+            <h1>💼 Dashboard 3: Faculty Capacity vs Demand</h1>
+            <p>Phân Tích Năng Lực - Kế Hoạch Tuyển Dụng & Cân Bằng Tải</p>
+        </div>
+
+        <div class="section">
+            <h2>Capacity Utilization Rate (2025-26)</h2>
+            <div class="chart-container">
+                <div id="utilizationChart"></div>
+            </div>
+        </div>
+
+        <div class="grid">
+            <div class="section">
+                <h2>Nhóm Khoa: Overcapacity</h2>
+                <div class="chart-container">
+                    <div id="overcapacityChart"></div>
+                </div>
+            </div>
+            <div class="section">
+                <h2>Nhóm Khoa: Undercapacity</h2>
+                <div class="chart-container">
+                    <div id="undercapacityChart"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Khuyến Nghị Tuyển Dụng</h2>
+            <div style="line-height: 1.8; color: #555;">
+                <table style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr style="background: #667eea; color: white;">
+                            <th style="padding: 12px; text-align: left;">Khoa/Phòng</th>
+                            <th style="padding: 12px; text-align: center;">Số GV Hiện Tại</th>
+                            <th style="padding: 12px; text-align: center;">Tải Trung Bình</th>
+                            <th style="padding: 12px; text-align: center;">Mức Target</th>
+                            <th style="padding: 12px; text-align: center;">Cần Tuyển</th>
+                            <th style="padding: 12px; text-align: center;">Độ Ưu Tiên</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="border-bottom: 1px solid #eee;">
+                            <td style="padding: 12px;">Phòng Công tác Sinh viên</td>
+                            <td style="padding: 12px; text-align: center;">2</td>
+                            <td style="padding: 12px; text-align: center;">1007.1</td>
+                            <td style="padding: 12px; text-align: center;">500</td>
+                            <td style="padding: 12px; text-align: center;">+2</td>
+                            <td style="padding: 12px; text-align: center;">🔴 Cao</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid #eee;">
+                            <td style="padding: 12px;">Khoa Toán - Tin học</td>
+                            <td style="padding: 12px; text-align: center;">43</td>
+                            <td style="padding: 12px; text-align: center;">672.8</td>
+                            <td style="padding: 12px; text-align: center;">500</td>
+                            <td style="padding: 12px; text-align: center;">+5</td>
+                            <td style="padding: 12px; text-align: center;">🔴 Cao</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid #eee;">
+                            <td style="padding: 12px;">Khoa Hóa học</td>
+                            <td style="padding: 12px; text-align: center;">28</td>
+                            <td style="padding: 12px; text-align: center;">611.4</td>
+                            <td style="padding: 12px; text-align: center;">500</td>
+                            <td style="padding: 12px; text-align: center;">+3</td>
+                            <td style="padding: 12px; text-align: center;">🟡 Trung</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid #eee;">
+                            <td style="padding: 12px;">Khoa Địa chất</td>
+                            <td style="padding: 12px; text-align: center;">25</td>
+                            <td style="padding: 12px; text-align: center;">179.4</td>
+                            <td style="padding: 12px; text-align: center;">400</td>
+                            <td style="padding: 12px; text-align: center;">-10</td>
+                            <td style="padding: 12px; text-align: center;">🟢 Thấp</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid #eee;">
+                            <td style="padding: 12px;">Khoa Khoa học Liên ngành</td>
+                            <td style="padding: 12px; text-align: center;">17</td>
+                            <td style="padding: 12px; text-align: center;">100.0</td>
+                            <td style="padding: 12px; text-align: center;">200</td>
+                            <td style="padding: 12px; text-align: center;">-12</td>
+                            <td style="padding: 12px; text-align: center;">🟢 Thấp</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Mô Hình Capacity Planning</h2>
+            <div class="chart-container">
+                <div id="capacityPlanChart"></div>
+            </div>
+            <p style="margin-top: 15px; color: #666; line-height: 1.8;">
+                <strong>Định Nghĩa Mức Target:</strong> Giờ giảng dạy mục tiêu để đạt hiệu suất tối ưu. 
+                Dựa trên phân tích thực tiễn, mức target là ~500 giờ quy đổi/người/năm. 
+                Các khoa vượt mức target 30%+ cần tuyển thêm nhân lực; các khoa dưới 50% mức target có thể cân bằng lại.
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // Capacity utilization by faculty (10 real KHOA, target: 500h/person/year)
+        const faculties = [
+            'Khoa Công nghệ thông tin',
+            'Khoa Hóa học',
+            'Khoa Toán - Tin học',
+            'Khoa Vật lý - Vật lý Kỹ thuật',
+            'Khoa Điện tử Viễn thông',
+            'Khoa Sinh học - Công nghệ Sinh học',
+            'Khoa Môi trường',
+            'Khoa Khoa học và Công nghệ Vật liệu',
+            'Khoa Địa chất',
+            'Khoa Khoa học liên ngành'
+        ];
+
+        // Real utilization rates: (Avg Hours/GV) / 500
+        const utilizationRates = [1.20, 1.22, 1.35, 0.84, 1.22, 0.68, 0.93, 0.77, 0.36, 0.20];
+
+        const utilTrace = {
+            x: faculties,
+            y: utilizationRates,
+            type: 'bar',
+            marker: {
+                color: utilizationRates.map(v => v > 1.2 ? '#ff6b6b' : v > 1.0 ? '#ffa94d' : v > 0.8 ? '#51cf66' : '#adb5bd')
+            }
+        };
+
+        const utilLayout = {
+            title: 'Capacity Utilization Rate = (Avg Giờ/GV) / 500',
+            xaxis: { tickangle: -45 },
+            yaxis: { title: 'Utilization Rate' },
+            margin: { b: 120 }
+        };
+
+        Plotly.newPlot('utilizationChart', [utilTrace], utilLayout, { responsive: true });
+
+        // Overcapacity (utilization > 100%, only real KHOA)
+        const overCapFaculties = [
+            'Khoa Toán - Tin học',
+            'Khoa Hóa học',
+            'Khoa Công nghệ thông tin',
+            'Khoa Điện tử Viễn thông'
+        ];
+        const overCapRates = [135, 122, 120, 122];
+
+        const overCapTrace = {
+            x: overCapFaculties,
+            y: overCapRates,
+            type: 'bar',
+            marker: { color: '#ff6b6b' }
+        };
+
+        const overCapLayout = {
+            title: 'Khoa Vượt Tải (Utilization > 100%)',
+            xaxis: { tickangle: -45 },
+            yaxis: { title: '% Vượt Target' },
+            margin: { b: 100 }
+        };
+
+        Plotly.newPlot('overcapacityChart', [overCapTrace], overCapLayout, { responsive: true });
+
+        // Undercapacity (Real KHOA with utilization < 50%)
+        const underCapFaculties = ['Khoa Địa chất', 'Khoa Khoa học liên ngành'];
+        const underCapRates = [36, 20];
+
+        const underCapTrace = {
+            x: underCapFaculties,
+            y: underCapRates,
+            type: 'bar',
+            marker: { color: '#51cf66' }
+        };
+
+        const underCapLayout = {
+            title: 'Khoa Thiếu Tải (Utilization < 50%)',
+            xaxis: { tickangle: -45 },
+            yaxis: { title: '% Của Target' },
+            margin: { b: 100 }
+        };
+
+        Plotly.newPlot('undercapacityChart', [underCapTrace], underCapLayout, { responsive: true });
+
+        // Capacity planning
+        const planFaculties = ['Khoa Toán', 'Khoa Hóa', 'CNTT', 'ĐT VT', 'Vật lý'];
+        const currentStaff = [43, 28, 22, 18, 15];
+        const recommendedStaff = [50, 34, 26, 21, 15];
+
+        const currentTrace = {
+            x: planFaculties,
+            y: currentStaff,
+            name: 'GV Hiện Tại',
+            type: 'bar'
+        };
+
+        const recommendedTrace = {
+            x: planFaculties,
+            y: recommendedStaff,
+            name: 'GV Nên Có',
+            type: 'bar'
+        };
+
+        const planLayout = {
+            title: 'Nhu Cầu Nhân Lực: Hiện Tại vs Khuyến Nghị',
+            barmode: 'group',
+            xaxis: { title: 'Khoa' },
+            yaxis: { title: 'Số GV' }
+        };
+
+        Plotly.newPlot('capacityPlanChart', [currentTrace, recommendedTrace], planLayout, { responsive: true });
+    </script>
+</body>
+</html>

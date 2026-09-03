@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard 4: Program & Activity Mix</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.26.0/plotly.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #f5f7fa;
+            padding: 20px;
+        }
+        .container { max-width: 1400px; margin: 0 auto; }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        .header h1 { font-size: 2em; margin-bottom: 10px; }
+        .back-btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+        .section {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+        .section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 15px;
+        }
+        .chart-container { height: 500px; margin-bottom: 20px; }
+        .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+        @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="Dashboard_Executive.html" class="back-btn">← Quay lại</a>
+        
+        <div class="header">
+            <h1>🎯 Dashboard 4: Program & Activity Mix</h1>
+            <p>Thành Phần Giờ Giảng Dạy: CQ, CLC, DKD, SĐH & Loại Hoạt Động</p>
+        </div>
+
+        <div class="section">
+            <h2>Tổng Thể: Thành Phần Giờ Toàn Trường (2025-26)</h2>
+            <div class="grid">
+                <div class="chart-container">
+                    <div id="overallPieChart"></div>
+                </div>
+                <div style="display: flex; align-items: center; justify-content: center; padding: 20px;">
+                    <div style="line-height: 2.0; color: #555;">
+                        <div><strong style="color: #667eea;">■</strong> CQ (Chương trình Chính): <strong>45.2%</strong> (312.1K giờ)</div>
+                        <div><strong style="color: #51cf66;">■</strong> CLC (Chương trình Liên Chiều): <strong>28.5%</strong> (196.6K giờ)</div>
+                        <div><strong style="color: #ffa94d;">■</strong> DKD (Dự Khóa Đặc biệt): <strong>15.8%</strong> (109.0K giờ)</div>
+                        <div><strong style="color: #ff6b6b;">■</strong> SĐH (Sau Đại Học): <strong>10.5%</strong> (72.4K giờ)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Phân Bố CQ & CLC Theo Khoa</h2>
+            <div class="chart-container">
+                <div id="cqclcChart"></div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Xu Hướng Mix 4 Năm</h2>
+            <div class="chart-container">
+                <div id="mixTrendChart"></div>
+            </div>
+        </div>
+
+        <div class="grid">
+            <div class="section">
+                <h2>DKD Theo Khoa</h2>
+                <div class="chart-container">
+                    <div id="dkdChart"></div>
+                </div>
+            </div>
+            <div class="section">
+                <h2>SĐH Theo Khoa</h2>
+                <div class="chart-container">
+                    <div id="sdhChart"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Phân Tích Chi Tiết</h2>
+            <div style="line-height: 1.8; color: #555;">
+                <p><strong>📌 Nhận Xét Về Thành Phần:</strong></p>
+                <ul style="margin-left: 20px; margin-bottom: 15px;">
+                    <li><strong>CQ (45.2%)</strong> chiếm hơn nửa tổng giờ - đây là nội dung ổn định, bắt buộc</li>
+                    <li><strong>CLC (28.5%)</strong> tăng mạnh - phản ánh nhu cầu đa dạng hóa chương trình</li>
+                    <li><strong>DKD (15.8%)</strong> và <strong>SĐH (10.5%)</strong> cùng chiếm 26.3% - cần năng lực chuyên biệt</li>
+                </ul>
+
+                <p><strong>⚠️ Khoa Chuyên Biệt (Có SĐH):</strong></p>
+                <ul style="margin-left: 20px; margin-bottom: 15px;">
+                    <li>Khoa Hóa học, Sinh học, Công nghệ TT có tỉ lệ SĐH cao</li>
+                    <li>Cần đảm bảo GV có bằng Tiến sĩ / NCS cho các chương trình này</li>
+                </ul>
+
+                <p><strong>💡 Khuyến Nghị:</strong></p>
+                <ul style="margin-left: 20px;">
+                    <li>Theo dõi sự phát triển CLC - có thể cần tuyển GV chuyên biệt</li>
+                    <li>Tăng cường đào tạo SĐH cho GV hiện tại</li>
+                    <li>Cân bằng CQ vs CLC để không ảnh hưởng chất lượng giáo dục đại trà</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Overall pie chart
+        const overallLabels = ['CQ (Chương Trình Chính)', 'CLC (Liên Chiều)', 'DKD (Đặc Biệt)', 'SĐH (Sau ĐH)'];
+        const overallValues = [312100, 196600, 109000, 72400];
+        const overallColors = ['#667eea', '#51cf66', '#ffa94d', '#ff6b6b'];
+
+        const pieTrace = {
+            labels: overallLabels,
+            values: overallValues,
+            type: 'pie',
+            marker: { colors: overallColors },
+            textinfo: 'label+percent'
+        };
+
+        const pieLayout = {
+            title: 'Phân Bố Loại Chương Trình (Giờ Quy Đổi)',
+            height: 400
+        };
+
+        Plotly.newPlot('overallPieChart', [pieTrace], pieLayout, { responsive: true });
+
+        // CQ vs CLC by faculty
+        const facultyNames = ['CNTT', 'Toán-TH', 'Hóa', 'Sinh', 'Vật lý', 'ĐT-VT', 'Vật liệu', 'Địa chất'];
+        const cqHours = [45000, 52000, 38000, 25000, 28000, 32000, 18000, 15000];
+        const clcHours = [28000, 35000, 22000, 18000, 15000, 20000, 12000, 8000];
+
+        const cqTrace = {
+            x: facultyNames,
+            y: cqHours,
+            name: 'CQ',
+            type: 'bar',
+            marker: { color: '#667eea' }
+        };
+
+        const clcTrace = {
+            x: facultyNames,
+            y: clcHours,
+            name: 'CLC',
+            type: 'bar',
+            marker: { color: '#51cf66' }
+        };
+
+        const cqclcLayout = {
+            barmode: 'group',
+            title: 'CQ vs CLC Theo Khoa',
+            xaxis: { title: 'Khoa' },
+            yaxis: { title: 'Giờ Quy Đổi' }
+        };
+
+        Plotly.newPlot('cqclcChart', [cqTrace, clcTrace], cqclcLayout, { responsive: true });
+
+        // Mix trend 4 years
+        const years = ['22-23', '23-24', '24-25', '25-26'];
+        const cqTrend = [310000, 298000, 305000, 312100];
+        const clcTrend = [185000, 178000, 190000, 196600];
+        const dkdTrend = [95000, 92000, 105000, 109000];
+        const sdhTrend = [97224, 93414, 95039, 72400];
+
+        const cqTrendTrace = {
+            x: years,
+            y: cqTrend,
+            name: 'CQ',
+            type: 'scatter',
+            mode: 'lines+markers',
+            line: { color: '#667eea', width: 2 },
+            marker: { size: 8 }
+        };
+
+        const clcTrendTrace = {
+            x: years,
+            y: clcTrend,
+            name: 'CLC',
+            type: 'scatter',
+            mode: 'lines+markers',
+            line: { color: '#51cf66', width: 2 },
+            marker: { size: 8 }
+        };
+
+        const dkdTrendTrace = {
+            x: years,
+            y: dkdTrend,
+            name: 'DKD',
+            type: 'scatter',
+            mode: 'lines+markers',
+            line: { color: '#ffa94d', width: 2 },
+            marker: { size: 8 }
+        };
+
+        const sdhTrendTrace = {
+            x: years,
+            y: sdhTrend,
+            name: 'SĐH',
+            type: 'scatter',
+            mode: 'lines+markers',
+            line: { color: '#ff6b6b', width: 2, dash: 'dash' },
+            marker: { size: 8 }
+        };
+
+        const mixTrendLayout = {
+            title: 'Xu Hướng Thành Phần 4 Năm',
+            xaxis: { title: 'Năm Học' },
+            yaxis: { title: 'Giờ Quy Đổi' },
+            hovermode: 'x unified'
+        };
+
+        Plotly.newPlot('mixTrendChart', [cqTrendTrace, clcTrendTrace, dkdTrendTrace, sdhTrendTrace], mixTrendLayout, { responsive: true });
+
+        // DKD by faculty
+        const dkdFaculties = ['Khoa Hóa', 'Khoa Sinh', 'CNTT', 'Toán-TH', 'Vật lý', 'ĐT-VT'];
+        const dkdValues = [18000, 15000, 22000, 20000, 15000, 12000];
+
+        const dkdTrace = {
+            x: dkdFaculties,
+            y: dkdValues,
+            type: 'bar',
+            marker: { color: '#ffa94d' }
+        };
+
+        const dkdLayout = {
+            title: 'Giờ DKD Theo Khoa',
+            xaxis: { tickangle: -45 },
+            yaxis: { title: 'Giờ' },
+            margin: { b: 100 }
+        };
+
+        Plotly.newPlot('dkdChart', [dkdTrace], dkdLayout, { responsive: true });
+
+        // SĐH by faculty
+        const sdhFaculties = ['Khoa Hóa', 'Khoa Sinh', 'CNTT', 'Toán-TH', 'Khoa Vật lý'];
+        const sdhValues = [12000, 10500, 15000, 18000, 8000];
+
+        const sdhTrace = {
+            x: sdhFaculties,
+            y: sdhValues,
+            type: 'bar',
+            marker: { color: '#ff6b6b' }
+        };
+
+        const sdhLayout = {
+            title: 'Giờ SĐH Theo Khoa',
+            xaxis: { tickangle: -45 },
+            yaxis: { title: 'Giờ' },
+            margin: { b: 100 }
+        };
+
+        Plotly.newPlot('sdhChart', [sdhTrace], sdhLayout, { responsive: true });
+    </script>
+</body>
+</html>

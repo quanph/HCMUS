@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Khối Lượng Công Việc Giảng Dạy - Executive Dashboard</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.26.0/plotly.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+        .content {
+            padding: 40px;
+        }
+        .kpi-section {
+            margin-bottom: 50px;
+        }
+        .kpi-section h2 {
+            font-size: 1.8em;
+            color: #333;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #667eea;
+            display: inline-block;
+        }
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .kpi-card {
+            background: linear-gradient(135deg, #f5f7fa 0%, #fff 100%);
+            border-left: 5px solid #667eea;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .kpi-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        .kpi-card.alert { border-left-color: #ff6b6b; }
+        .kpi-card.warning { border-left-color: #ffa94d; }
+        .kpi-card.success { border-left-color: #51cf66; }
+        .kpi-label {
+            font-size: 0.9em;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+        .kpi-value {
+            font-size: 2.2em;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        .kpi-detail {
+            font-size: 0.85em;
+            color: #999;
+        }
+        .chart-container {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .alert-section {
+            background: #fff3cd;
+            border-left: 5px solid #ffc107;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .alert-section h3 {
+            color: #856404;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+        .alert-list {
+            list-style: none;
+            color: #856404;
+        }
+        .alert-list li {
+            padding: 8px 0;
+            padding-left: 25px;
+            position: relative;
+        }
+        .alert-list li:before {
+            content: "⚠️";
+            position: absolute;
+            left: 0;
+        }
+        .nav-section {
+            background: #f8f9fa;
+            padding: 30px;
+            margin-top: 50px;
+            border-top: 2px solid #e9ecef;
+        }
+        .nav-section h2 {
+            color: #333;
+            margin-bottom: 25px;
+            font-size: 1.5em;
+        }
+        .nav-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        .nav-card {
+            background: white;
+            border: 2px solid #667eea;
+            padding: 25px;
+            border-radius: 8px;
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        .nav-card:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+        .nav-card h3 {
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+        .nav-card p {
+            font-size: 0.9em;
+            opacity: 0.8;
+            line-height: 1.5;
+        }
+        .trending {
+            display: inline-block;
+            padding: 3px 8px;
+            background: #e7f3ff;
+            color: #0066cc;
+            border-radius: 4px;
+            font-size: 0.75em;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+        .trending.up { background: #f0f9ff; color: #0066cc; }
+        .trending.down { background: #ffe7e7; color: #cc0000; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 Executive Dashboard</h1>
+            <p>Khối Lượng Công Việc Giảng Dạy 2025-26</p>
+        </div>
+        
+        <div class="content">
+            <!-- KPI SECTION -->
+            <div class="kpi-section">
+                <h2>📊 8 Chỉ Số Chiến Lược</h2>
+                <div class="kpi-grid">
+                    <div class="kpi-card">
+                        <div class="kpi-label">👥 Số người tham gia giảng dạy</div>
+                        <div class="kpi-value">728</div>
+                        <div class="kpi-detail">Tăng từ 668 (22-23)</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-label">⏱️ Tổng giờ thực dạy</div>
+                        <div class="kpi-value">660,935</div>
+                        <div class="kpi-detail">+9% YoY</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-label">📈 Tổng giờ quy đổi</div>
+                        <div class="kpi-value">689,659</div>
+                        <div class="kpi-detail">Hệ số: 1.043</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-label">📌 Median giờ/GV</div>
+                        <div class="kpi-value">411.8</div>
+                        <div class="kpi-detail">+10% từ năm trước</div>
+                    </div>
+                    <div class="kpi-card warning">
+                        <div class="kpi-label">🔴 P90 (giờ/GV)</div>
+                        <div class="kpi-value">907.4</div>
+                        <div class="kpi-detail">Top 10% tải nặng</div>
+                    </div>
+                    <div class="kpi-card alert">
+                        <div class="kpi-label">⚠️ % Very-high workload</div>
+                        <div class="kpi-value">27.7%</div>
+                        <div class="kpi-detail">&gt;617.7 giờ</div>
+                    </div>
+                    <div class="kpi-card alert">
+                        <div class="kpi-label">📊 % Low workload</div>
+                        <div class="kpi-value">25.3%</div>
+                        <div class="kpi-detail">&lt;205.9 giờ</div>
+                    </div>
+                    <div class="kpi-card success">
+                        <div class="kpi-label">💡 Khoa overcapacity</div>
+                        <div class="kpi-value">8</div>
+                        <div class="kpi-detail">&gt;494.1h/người</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TREND CHART -->
+            <div class="kpi-section">
+                <h2>📈 Xu Hướng 4 Năm</h2>
+                <div class="chart-container">
+                    <div id="trendChart" style="height: 400px;"></div>
+                </div>
+            </div>
+
+            <!-- ALERTS -->
+            <div class="kpi-section">
+                <h2>🚨 Cần Chú Ý</h2>
+                
+                <div class="alert-section">
+                    <h3>1️⃣ Khoa Thiếu Capacity (Tải &lt; 300h/người)</h3>
+                    <ul class="alert-list">
+                        <li><strong>Khoa Khoa học liên ngành:</strong> 100.0h (17 người) ⬇️ -19.6%</li>
+                        <li><strong>Khoa Địa chất:</strong> 179.4h (25 người) ⬇️ -15.9%</li>
+                        <li><strong>Khoa Khoa học Vật liệu:</strong> 384.0h (45 người)</li>
+                    </ul>
+                </div>
+
+                <div class="alert-section">
+                    <h3>2️⃣ Khoa Tải Nặng (TB &gt; 600h/người)</h3>
+                    <ul class="alert-list">
+                        <li><strong>Khoa Toán - Tin học:</strong> 672.8h/người (69 GV) - Phân bố bất thường</li>
+                        <li><strong>Khoa Hóa học:</strong> 611.4h/người (93 GV)</li>
+                        <li><strong>Khoa Điện tử Viễn thông:</strong> 607.7h/người (45 GV)</li>
+                        <li><strong>Khoa Công nghệ thông tin:</strong> 599.6h/người (119 GV) - Lớn nhất</li>
+                    </ul>
+                </div>
+
+                <div class="alert-section">
+                    <h3>3️⃣ Khoa Cần Tuyển Dụng Thêm</h3>
+                    <ul class="alert-list">
+                        <li><strong>Khoa Công nghệ thông tin:</strong> 119 GV - Nhu cầu tăng cao</li>
+                        <li><strong>Khoa Hóa học:</strong> 93 GV - Tải gần 612h/người</li>
+                        <li><strong>Khoa Vật lý - Vật lý Kỹ thuật:</strong> 105 GV</li>
+                        <li><strong>Khoa Sinh học - Công nghệ Sinh học:</strong> 110 GV</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- NAVIGATION -->
+            <div class="nav-section">
+                <h2>🔍 Khám Phá Chi Tiết</h2>
+                <div class="nav-grid">
+                    <a class="nav-card" href="Dashboard_1_Trend.html">
+                        <h3>1. 4-Year Trend</h3>
+                        <p>Xu hướng giờ giảng 4 năm - toàn trường, khoa, cá nhân</p>
+                        <span class="trending up">↗️ Chi tiết theo Khoa</span>
+                    </a>
+                    <a class="nav-card" href="Dashboard_2_Distribution.html">
+                        <h3>2. Workload Distribution</h3>
+                        <p>Phân bố khối lượng: Median, P25, P75, P90, overload</p>
+                        <span class="trending">📊 Box plot & Histogram</span>
+                    </a>
+                    <a class="nav-card" href="Dashboard_3_Capacity.html">
+                        <h3>3. Capacity vs Demand</h3>
+                        <p>Năng lực vs Nhu cầu - cho kế hoạch tuyển dụng</p>
+                        <span class="trending">💼 Phân tích HR</span>
+                    </a>
+                    <a class="nav-card" href="Dashboard_4_ProgramMix.html">
+                        <h3>4. Program Mix</h3>
+                        <p>Hỗn hợp chương trình: CQ, CLC, DKD, SĐH</p>
+                        <span class="trending">🎯 Thành phần giờ</span>
+                    </a>
+                    <a class="nav-card" href="Dashboard_5_Individual.html">
+                        <h3>5. Individual 360°</h3>
+                        <p>Khối lượng công việc 360: ĐH, SĐH, NCKH, quản lý</p>
+                        <span class="trending">👤 Top 30 GV</span>
+                    </a>
+                    <a class="nav-card" href="Dashboard_6_Courses.html">
+                        <h3>6. Số Lượng Môn</h3>
+                        <p>Số lượng môn học giảng dạy của từng Khoa</p>
+                        <span class="trending">📚 Đa dạng</span>
+                    </a>
+                    <a class="nav-card" href="Dashboard_7_Overload.html">
+                        <h3>7. Phân Tích Quá Tải</h3>
+                        <p>PHÂN TÍCH QUÁ TẢI GIẢNG DẠY HCMUS - Chi tiết từng Khoa</p>
+                        <span class="trending down">🚨 Cần chú ý</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Trend Chart
+        const years = ['22-23', '23-24', '24-25', '25-26'];
+        const numFaculty = [668, 689, 706, 728];
+        const totalHours = [687224, 661414, 695039, 689659];
+        const medianHours = [386.4, 367.7, 373.5, 411.8];
+        const p90Hours = [842, 801, 845, 907.4];
+
+        const trace1 = {
+            x: years,
+            y: numFaculty,
+            name: 'Số Người (GV)',
+            type: 'bar',
+            marker: { color: '#667eea' },
+            yaxis: 'y1'
+        };
+
+        const trace2 = {
+            x: years,
+            y: medianHours,
+            name: 'Median Giờ/GV',
+            type: 'scatter',
+            mode: 'lines+markers',
+            line: { color: '#ff6b6b', width: 3 },
+            marker: { size: 10, color: '#ff6b6b' },
+            yaxis: 'y2'
+        };
+
+        const trace3 = {
+            x: years,
+            y: p90Hours,
+            name: 'P90 (Giờ/GV)',
+            type: 'scatter',
+            mode: 'lines+markers',
+            line: { color: '#ffa94d', width: 2, dash: 'dash' },
+            marker: { size: 8, color: '#ffa94d' },
+            yaxis: 'y2'
+        };
+
+        const data = [trace1, trace2, trace3];
+        const layout = {
+            title: { text: 'Xu Hướng 4 Năm: Nhân Lực & Khối Lượng', font: { size: 16, color: '#333' } },
+            xaxis: { title: 'Năm Học' },
+            yaxis: { title: 'Số Người', titlefont: { color: '#667eea' }, tickfont: { color: '#667eea' } },
+            yaxis2: { title: 'Giờ/GV', overlaying: 'y', side: 'right', titlefont: { color: '#ff6b6b' }, tickfont: { color: '#ff6b6b' } },
+            hovermode: 'x unified',
+            plot_bgcolor: 'rgba(0,0,0,0)',
+            paper_bgcolor: 'white',
+            margin: { t: 60, b: 60, l: 60, r: 80 }
+        };
+
+        Plotly.newPlot('trendChart', data, layout, { responsive: true });
+    </script>
+</body>
+</html>

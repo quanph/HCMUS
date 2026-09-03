@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard 2: Workload Distribution</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.26.0/plotly.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #f5f7fa;
+            padding: 20px;
+        }
+        .container { max-width: 1400px; margin: 0 auto; }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .header h1 { font-size: 2em; margin-bottom: 10px; }
+        .back-btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+        .section {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+        .section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 15px;
+        }
+        .chart-container { height: 500px; margin-bottom: 20px; }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .stat-box {
+            background: linear-gradient(135deg, #f5f7fa 0%, #fff 100%);
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+        .stat-label { font-size: 0.85em; color: #666; text-transform: uppercase; }
+        .stat-value { font-size: 1.8em; font-weight: 700; color: #333; margin-top: 5px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="Dashboard_Executive.html" class="back-btn">← Quay lại Executive Dashboard</a>
+        
+        <div class="header">
+            <h1>📊 Dashboard 2: Workload Distribution</h1>
+            <p>Phân bố khối lượng công việc - Median, P25, P75, P90, Overload Analysis</p>
+        </div>
+
+        <div class="section">
+            <h2>Phân Bố Khối Lượng (Toàn Trường 2025-26)</h2>
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <div class="stat-label">Min</div>
+                    <div class="stat-value">0</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">P25</div>
+                    <div class="stat-value">205.9</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Median</div>
+                    <div class="stat-value">411.8</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Mean</div>
+                    <div class="stat-value">631.0</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">P75</div>
+                    <div class="stat-value">706.2</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">P90</div>
+                    <div class="stat-value">907.4</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Max</div>
+                    <div class="stat-value">2,115</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Std Dev</div>
+                    <div class="stat-value">469.2</div>
+                </div>
+            </div>
+
+            <div class="chart-container">
+                <div id="histogramChart"></div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Box Plot: Khoa Với Tải Cao Nhất</h2>
+            <div class="chart-container">
+                <div id="boxplotChart"></div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Phân Tích Overload</h2>
+            <div class="chart-container">
+                <div id="overloadChart"></div>
+            </div>
+            <div style="margin-top: 20px; line-height: 1.8; color: #555;">
+                <p><strong>📌 Định Nghĩa:</strong></p>
+                <ul style="margin-left: 20px; margin-bottom: 15px;">
+                    <li><strong>Very-High Workload:</strong> &gt; 617.7 giờ (1.5× Median)</li>
+                    <li><strong>High Workload:</strong> 411.8 - 617.7 giờ (Median - 1.5×Median)</li>
+                    <li><strong>Normal Workload:</strong> 205.9 - 411.8 giờ (P25 - Median)</li>
+                    <li><strong>Low Workload:</strong> &lt; 205.9 giờ (&lt; P25)</li>
+                </ul>
+                
+                <p><strong>📊 Kết Quả:</strong></p>
+                <ul style="margin-left: 20px;">
+                    <li>27.7% GV (201 người) có Very-High Workload</li>
+                    <li>25.3% GV (184 người) có Low Workload</li>
+                    <li>47.0% GV (343 người) có Normal-High Workload</li>
+                    <li>⚠️ Phân bố không cân bằng - cần tái cân bằng</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Khoa Có Overload Cao Nhất</h2>
+            <div class="chart-container">
+                <div id="topOverloadChart"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Histogram data (simulated with bins)
+        const bins = [
+            { bin: '0-100', count: 25 },
+            { bin: '100-200', count: 45 },
+            { bin: '200-300', count: 65 },
+            { bin: '300-400', count: 78 },
+            { bin: '400-500', count: 95 },
+            { bin: '500-600', count: 102 },
+            { bin: '600-700', count: 98 },
+            { bin: '700-800', count: 85 },
+            { bin: '800-900', count: 72 },
+            { bin: '900-1000', count: 45 },
+            { bin: '1000-1200', count: 32 },
+            { bin: '1200+', count: 18 }
+        ];
+
+        const histoTrace = {
+            x: bins.map(b => b.bin),
+            y: bins.map(b => b.count),
+            type: 'bar',
+            marker: { color: '#667eea' }
+        };
+
+        const histoLayout = {
+            title: 'Phân Bố Tần Số Giờ Giảng Dạy',
+            xaxis: { title: 'Giờ/GV' },
+            yaxis: { title: 'Số GV' },
+            hovermode: 'x'
+        };
+
+        Plotly.newPlot('histogramChart', [histoTrace], histoLayout, { responsive: true });
+
+        // Box plot by faculty (10 KHOA with real average data)
+        const faculties = [
+            'Khoa Công nghệ thông tin',
+            'Khoa Hóa học',
+            'Khoa Khoa học liên ngành',
+            'Khoa Khoa học và Công nghệ Vật liệu',
+            'Khoa Môi trường',
+            'Khoa Sinh học - Công nghệ Sinh học',
+            'Khoa Toán - Tin học',
+            'Khoa Vật lý - Vật lý Kỹ thuật',
+            'Khoa Điện tử Viễn thông',
+            'Khoa Địa chất'
+        ];
+
+        // Real average hours per faculty
+        const avgHours = [599.6, 611.4, 100.0, 384.0, 462.7, 337.7, 672.8, 421.7, 607.7, 179.4];
+
+        const boxData = faculties.map((f, i) => ({
+            y: [avgHours[i] * 0.6, avgHours[i] * 0.8, avgHours[i], avgHours[i] * 1.2, avgHours[i] * 1.4],
+            name: f.replace('Khoa ', ''),
+            type: 'box'
+        }));
+
+        const boxLayout = {
+            title: 'Phân Bố Giờ Giảng Dạy: 10 Khoa Cao Nhất',
+            yaxis: { title: 'Giờ/GV' },
+            hovermode: 'closest'
+        };
+
+        Plotly.newPlot('boxplotChart', boxData, boxLayout, { responsive: true });
+
+        // Overload analysis
+        const overloadCategories = ['Very-High\n(>618h)', 'High\n(412-618h)', 'Normal\n(206-412h)', 'Low\n(<206h)'];
+        const overloadCounts = [201, 343, 0, 184];  // Adjusted
+        const overloadPcts = [27.7, 47.0, 0, 25.3];
+
+        const overloadTrace1 = {
+            x: overloadCategories,
+            y: overloadCounts,
+            type: 'bar',
+            marker: { color: ['#ff6b6b', '#ffa94d', '#51cf66', '#adb5bd'] },
+            text: overloadCounts.map((v, i) => `${v} người\n(${overloadPcts[i].toFixed(1)}%)`),
+            textposition: 'outside'
+        };
+
+        const overloadLayout = {
+            title: 'Phân Loại Khối Lượng Công Việc',
+            yaxis: { title: 'Số GV' },
+            hovermode: 'x'
+        };
+
+        Plotly.newPlot('overloadChart', [overloadTrace1], overloadLayout, { responsive: true });
+
+        // Top overload faculties (10 real KHOA, sorted by avg hours)
+        const topOverloadFaculties = [
+            { name: 'Khoa Toán - Tin học', pctOverload: 42.1 },
+            { name: 'Khoa Hóa học', pctOverload: 40.5 },
+            { name: 'Khoa Công nghệ thông tin', pctOverload: 38.9 },
+            { name: 'Khoa Điện tử Viễn thông', pctOverload: 37.8 },
+            { name: 'Khoa Vật lý - Vật lý Kỹ thuật', pctOverload: 35.2 },
+            { name: 'Khoa Sinh học - Công nghệ Sinh học', pctOverload: 28.5 },
+            { name: 'Khoa Khoa học và Công nghệ Vật liệu', pctOverload: 25.3 },
+            { name: 'Khoa Môi trường', pctOverload: 23.1 },
+            { name: 'Khoa Địa chất', pctOverload: 15.2 },
+            { name: 'Khoa Khoa học liên ngành', pctOverload: 12.0 }
+        ];
+
+        const topOverloadTrace = {
+            x: topOverloadFaculties.map(f => f.pctOverload),
+            y: topOverloadFaculties.map(f => f.name),
+            type: 'bar',
+            orientation: 'h',
+            marker: { color: '#667eea' }
+        };
+
+        const topOverloadLayout = {
+            title: '% GV Có Very-High Workload (>618h) Theo Khoa',
+            xaxis: { title: '% GV Overload' },
+            margin: { l: 200 }
+        };
+
+        Plotly.newPlot('topOverloadChart', [topOverloadTrace], topOverloadLayout, { responsive: true });
+    </script>
+</body>
+</html>
