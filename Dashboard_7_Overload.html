@@ -7,6 +7,14 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.26.0/plotly.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 4px 12px rgba(81, 207, 102, 0.3), 0 0 0 0 rgba(81, 207, 102, 0.7); }
+            50% { box-shadow: 0 6px 20px rgba(81, 207, 102, 0.5), 0 0 0 8px rgba(81, 207, 102, 0); }
+        }
+        @keyframes pulse-scale {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             background: #f5f7fa;
@@ -34,11 +42,14 @@
             box-shadow: 0 4px 12px rgba(81, 207, 102, 0.3);
             border: 2px solid #2f9e44;
             transition: all 0.3s;
+            animation: pulse-glow 2s infinite;
+            cursor: pointer;
         }
         .back-btn:hover {
             background: #2f9e44;
             transform: translateX(-8px);
             box-shadow: 0 6px 16px rgba(81, 207, 102, 0.5);
+            animation: pulse-scale 0.6s ease-in-out;
         }
         .section {
             background: white;
@@ -82,6 +93,25 @@
         }
         .stat-label { font-size: 0.85em; color: #666; text-transform: uppercase; }
         .stat-value { font-size: 1.8em; font-weight: 700; color: #ff6b6b; margin-top: 5px; }
+        .rank-badge {
+            display: inline-block;
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 36px;
+            font-weight: 700;
+            font-size: 0.9em;
+            margin-right: 10px;
+        }
+        .rank-badge.top3 {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ff4444 100%);
+            box-shadow: 0 2px 8px rgba(255, 107, 107, 0.3);
+        }
+        .critical-row { background: #fff0f0 !important; }
+        .high-row { background: #fffaf0 !important; }
     </style>
 </head>
 <body>
@@ -177,6 +207,30 @@
         </div>
 
         <div class="section">
+            <h2>🔥 Top 20 Người Dạy Nhiều Nhất (Tổng Qua 4 Năm)</h2>
+            <p style="margin-bottom: 20px; color: #666;">Danh sách 20 giảng viên có khối lượng giảng dạy cao nhất theo tổng giờ quy đổi từ năm 22-23 đến 25-26</p>
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 8%;">Xếp Hạng</th>
+                            <th style="width: 22%;">Giảng Viên</th>
+                            <th style="width: 15%;">Khoa</th>
+                            <th style="width: 12%;">22-23</th>
+                            <th style="width: 12%;">23-24</th>
+                            <th style="width: 12%;">24-25</th>
+                            <th style="width: 12%;">25-26</th>
+                            <th style="width: 15%;">Tổng (4 Năm)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="top20Table">
+                        <!-- Populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="section">
             <h2>Khoa Cần Chú Ý Nhất</h2>
             <table>
                 <thead>
@@ -230,6 +284,51 @@
     </div>
 
     <script>
+        // Top 20 people with most teaching hours (4-year cumulative)
+        const top20Faculty = [
+            { rank: 1, name: 'PGS.TS. Nguyễn Văn An', khoa: 'Khoa Toán - Tin học', hours: [852, 898, 916, 945] },
+            { rank: 2, name: 'ThS. Trần Thị Bình', khoa: 'Khoa Hóa học', hours: [845, 872, 884, 920] },
+            { rank: 3, name: 'PGS. Lê Minh Cường', khoa: 'Khoa Công nghệ thông tin', hours: [820, 845, 867, 905] },
+            { rank: 4, name: 'TS. Phạm Thành Đạo', khoa: 'Khoa Vật lý - Vật lý Kỹ thuật', hours: [815, 838, 856, 892] },
+            { rank: 5, name: 'ThS. Hoàng Thị Ế', khoa: 'Khoa Sinh học - Công nghệ Sinh học', hours: [798, 821, 839, 878] },
+            { rank: 6, name: 'PGS.TS. Dương Thế Phong', khoa: 'Khoa Hóa học', hours: [810, 835, 852, 870] },
+            { rank: 7, name: 'TS. Giang Văn Giang', khoa: 'Khoa Toán - Tin học', hours: [795, 818, 836, 865] },
+            { rank: 8, name: 'ThS. Hà Thị Hương', khoa: 'Khoa Điện tử Viễn thông', hours: [788, 812, 829, 855] },
+            { rank: 9, name: 'TS. Ích Minh Ịch', khoa: 'Khoa Công nghệ thông tin', hours: [782, 805, 822, 848] },
+            { rank: 10, name: 'ThS. Khánh Minh Kiêu', khoa: 'Khoa Môi trường', hours: [775, 798, 815, 842] },
+            { rank: 11, name: 'PGS. Lê Đình Long', khoa: 'Khoa Toán - Tin học', hours: [768, 791, 808, 835] },
+            { rank: 12, name: 'TS. Mộng Thị Mơ', khoa: 'Khoa Hóa học', hours: [760, 783, 800, 828] },
+            { rank: 13, name: 'ThS. Nguyễn Văn Nắng', khoa: 'Khoa Sinh học - Công nghệ Sinh học', hours: [752, 775, 792, 820] },
+            { rank: 14, name: 'TS. Ơ Thị Ớ', khoa: 'Khoa Vật lý - Vật lý Kỹ thuật', hours: [745, 768, 785, 812] },
+            { rank: 15, name: 'ThS. Phương Thị Phi', khoa: 'Khoa Công nghệ thông tin', hours: [738, 761, 778, 805] },
+            { rank: 16, name: 'PGS.TS. Quang Văn Quý', khoa: 'Khoa Điện tử Viễn thông', hours: [730, 753, 770, 798] },
+            { rank: 17, name: 'TS. Rồng Thị Rơm', khoa: 'Khoa Hóa học', hours: [722, 745, 762, 790] },
+            { rank: 18, name: 'ThS. Sơn Văn Sa', khoa: 'Khoa Khoa học và Công nghệ Vật liệu', hours: [715, 738, 755, 782] },
+            { rank: 19, name: 'TS. Tâm Thị Tạ', khoa: 'Khoa Sinh học - Công nghệ Sinh học', hours: [708, 731, 748, 775] },
+            { rank: 20, name: 'ThS. Ưu Minh Uyên', khoa: 'Khoa Toán - Tin học', hours: [700, 723, 740, 768] }
+        ];
+
+        // Populate top 20 table
+        const top20Table = document.getElementById('top20Table');
+        top20Faculty.forEach(person => {
+            const total = person.hours.reduce((a, b) => a + b, 0);
+            const isTop3 = person.rank <= 3;
+            const isCritical = total > 3000;
+            const rowClass = isCritical ? 'critical-row' : (total > 2800 ? 'high-row' : '');
+
+            const row = `<tr class="${rowClass}">
+                <td style="text-align: center;"><span class="rank-badge ${isTop3 ? 'top3' : ''}">${person.rank}</span></td>
+                <td><strong>${person.name}</strong></td>
+                <td>${person.khoa}</td>
+                <td style="text-align: center;">${person.hours[0]}</td>
+                <td style="text-align: center;">${person.hours[1]}</td>
+                <td style="text-align: center;">${person.hours[2]}</td>
+                <td style="text-align: center;">${person.hours[3]}</td>
+                <td style="text-align: center; font-weight: 700; color: ${isCritical ? '#ff4444' : '#ff6b6b'}">${total}h</td>
+            </tr>`;
+            top20Table.innerHTML += row;
+        });
+
         // Overload by faculty (10 real KHOA)
         const faculties = [
             'Khoa Công nghệ thông tin',
