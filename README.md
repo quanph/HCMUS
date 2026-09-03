@@ -7,7 +7,7 @@ Hệ thống Dashboard phân tích khối lượng công việc giảng dạy c�
 
 ## 📊 Dashboard Overview
 
-### 🎯 Executive Dashboard (Dashboard_Executive.html)
+### 🎯 Executive Dashboard (index.html)
 Dashboard tổng quan chính với:
 - **8 Chỉ Số Chiến Lược:** Số GV, giờ thực dạy, giờ quy đổi, median, P90, % quá tải, % tải thấp, khoa vượt tải
 - **Xu Hướng 4 Năm:** Biểu đồ số GV và giờ giảng 2022-2026
@@ -99,7 +99,7 @@ Phân tích chi tiết quá tải giảng dạy:
 
 ### Mở Dashboard
 1. Tải về tất cả các file HTML
-2. Mở `Dashboard_Executive.html` trong trình duyệt
+2. Mở `index.html` trong trình duyệt
 3. Nhấp vào các thẻ để xem Dashboard chi tiết
 4. Sử dụng nút "← Quay lại" để trở về Dashboard chính
 
@@ -114,7 +114,7 @@ Phân tích chi tiết quá tải giảng dạy:
 
 ```
 HCMUS_Dashboard/
-├── Dashboard_Executive.html      (Dashboard tổng quan)
+├── index.html      (Dashboard tổng quan)
 ├── Dashboard_1_Trend.html         (Xu hướng 4 năm)
 ├── Dashboard_2_Distribution.html  (Phân bố khối lượng)
 ├── Dashboard_3_Capacity.html      (Năng lực vs Nhu cầu)
@@ -173,7 +173,7 @@ Tất cả dữ liệu đã được kiểm chứng:
 - **Dashboard 3:** Mục "Undercapacity" chỉ hiển thị 2 KHOA thực có utilization < 50% (Khoa Địa chất 36%, Khoa Khoa học liên ngành 20%)
 - **Dashboard 2 & 7:** Phân loại overload dựa trên Median (411.8h) × 1.5 = 617.7h
 - **Dashboard 5:** Thay đổi từ individual teacher analysis sang KHOA-level CQ/CTDA analysis
-- **Back Buttons:** Tất cả 7 dashboard đều có nút quay lại Dashboard_Executive.html
+- **Back Buttons:** Tất cả 7 dashboard đều có nút quay lại index.html
 
 ## 🔄 Cập Nhật Lần Cuối
 

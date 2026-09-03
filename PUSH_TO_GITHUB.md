@@ -63,7 +63,7 @@ cat ~/.ssh/id_ed25519.pub
 
 ```
 HCMUS_Dashboard/
-├── Dashboard_Executive.html       (15 KB)
+├── index.html       (15 KB)
 ├── Dashboard_1_Trend.html         (14 KB)
 ├── Dashboard_2_Distribution.html  (11 KB)
 ├── Dashboard_3_Capacity.html      (12 KB)
