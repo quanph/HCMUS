@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard 7: Phân Tích Quá Tải Giảng Dạy</title>
+    <title>Dashboard 7: Phân Tích Quá Tải Giảng Dạy + Top 20 Theo Khoa</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.26.0/plotly.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -66,33 +66,34 @@
             padding-bottom: 15px;
         }
         .chart-container { height: 500px; margin-bottom: 20px; }
+        .filter-group {
+            margin-bottom: 25px;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .filter-group label {
+            font-weight: 600;
+            color: #333;
+        }
+        select {
+            padding: 12px 15px;
+            border: 2px solid #667eea;
+            border-radius: 6px;
+            font-size: 1em;
+            cursor: pointer;
+            background: white;
+            color: #333;
+            min-width: 300px;
+        }
+        select:hover {
+            border-color: #764ba2;
+        }
         table { width: 100%; border-collapse: collapse; margin-top: 20px; }
         th, td { padding: 12px; text-align: left; border-bottom: 1px solid #eee; }
         th { background: #ff6b6b; color: white; font-weight: 600; }
         tr:hover { background: #f9f9f9; }
-        .alert-box {
-            background: #ffe7e7;
-            border-left: 4px solid #ff6b6b;
-            padding: 20px;
-            margin: 20px 0;
-            border-radius: 6px;
-        }
-        .warning-text { color: #cc0000; font-weight: 600; }
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin: 20px 0;
-        }
-        .stat-box {
-            background: linear-gradient(135deg, #ffe7e7 0%, #fff 100%);
-            padding: 20px;
-            border-radius: 8px;
-            border-left: 4px solid #ff6b6b;
-            text-align: center;
-        }
-        .stat-label { font-size: 0.85em; color: #666; text-transform: uppercase; }
-        .stat-value { font-size: 1.8em; font-weight: 700; color: #ff6b6b; margin-top: 5px; }
         .rank-badge {
             display: inline-block;
             width: 36px;
@@ -112,6 +113,21 @@
         }
         .critical-row { background: #fff0f0 !important; }
         .high-row { background: #fffaf0 !important; }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .stat-box {
+            background: linear-gradient(135deg, #ffe7e7 0%, #fff 100%);
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #ff6b6b;
+            text-align: center;
+        }
+        .stat-label { font-size: 0.85em; color: #666; text-transform: uppercase; }
+        .stat-value { font-size: 1.8em; font-weight: 700; color: #ff6b6b; margin-top: 5px; }
     </style>
 </head>
 <body>
@@ -119,15 +135,15 @@
         <a href="index.html" class="back-btn">← Quay lại Executive Dashboard</a>
 
         <div class="header">
-            <h1>🚨 Dashboard 7: Phân Tích Chi Tiết Quá Tải Giảng Dạy</h1>
-            <p>PHÂN TÍCH QUÁ TẢI GIẢNG DẠY HCMUS - 2025-26</p>
+            <h1>🚨 Dashboard 7: Phân Tích Quá Tải + Top 20 Theo Khoa</h1>
+            <p>PHÂN TÍCH CHI TIẾT - 2025-26 & TOP 20 NGƯỜI DẠY NHIỀU NHẤT CỦA MỖI KHOA</p>
         </div>
 
         <div class="section">
             <h2>Tình Hình Quá Tải Toàn Trường</h2>
             <div class="stats-grid">
                 <div class="stat-box">
-                    <div class="stat-label">GV Quá Tải (>617.7h)</div>
+                    <div class="stat-label">GV Quá Tải (>618h)</div>
                     <div class="stat-value">201</div>
                 </div>
                 <div class="stat-box">
@@ -135,92 +151,47 @@
                     <div class="stat-value">27.7%</div>
                 </div>
                 <div class="stat-box">
-                    <div class="stat-label">Very High (>907h)</div>
-                    <div class="stat-value">~85</div>
+                    <div class="stat-label">Tổng GV</div>
+                    <div class="stat-value">728</div>
                 </div>
                 <div class="stat-box">
-                    <div class="stat-label">Critical (>1100h)</div>
-                    <div class="stat-value">~35</div>
+                    <div class="stat-label">Median Tiết/GV</div>
+                    <div class="stat-value">411.8</div>
                 </div>
             </div>
-
-            <div class="alert-box">
-                <p><strong>⚠️ Cảnh báo:</strong> <span class="warning-text">27.7% GV có khối lượng rất cao (>617.7 giờ/năm), cần cân nhắc biện pháp giảm tải.</span></p>
-            </div>
         </div>
 
         <div class="section">
-            <h2>Phân Bố GV Quá Tải Theo Khoa</h2>
-            <div class="chart-container">
-                <div id="overloadByFacultyChart"></div>
+            <h2>🔥 Top 20 Người Dạy Nhiều Nhất - Chọn Theo Khoa</h2>
+            <div class="filter-group">
+                <label for="khoaSelect">📍 Chọn Khoa:</label>
+                <select id="khoaSelect">
+                    <option value="all">📊 Tất Cả Trường (Toàn Bộ)</option>
+                    <option value="Khoa Công nghệ thông tin">Khoa Công nghệ thông tin</option>
+                    <option value="Khoa Hóa học">Khoa Hóa học</option>
+                    <option value="Khoa Toán - Tin học">Khoa Toán - Tin học</option>
+                    <option value="Khoa Vật lý - Vật lý Kỹ thuật">Khoa Vật lý - Vật lý Kỹ thuật</option>
+                    <option value="Khoa Điện tử Viễn thông">Khoa Điện tử Viễn thông</option>
+                    <option value="Khoa Sinh học - Công nghệ Sinh học">Khoa Sinh học - Công nghệ Sinh học</option>
+                    <option value="Khoa Môi trường">Khoa Môi trường</option>
+                    <option value="Khoa Khoa học và Công nghệ Vật liệu">Khoa Khoa học và Công nghệ Vật liệu</option>
+                    <option value="Khoa Địa chất">Khoa Địa chất</option>
+                    <option value="Khoa Khoa học liên ngành">Khoa Khoa học liên ngành</option>
+                </select>
             </div>
-        </div>
 
-        <div class="section">
-            <h2>Top 10 Khoa Có Tỉ Lệ GV Quá Tải Cao Nhất</h2>
-            <div class="chart-container">
-                <div id="topOverloadPercentChart"></div>
-            </div>
-        </div>
-
-        <div class="section">
-            <h2>Phân Tích Mức Độ Quá Tải</h2>
-            <div class="chart-container">
-                <div id="severityChart"></div>
-            </div>
-            <div style="margin-top: 20px; line-height: 1.8; color: #555;">
-                <p><strong>📌 Phân Loại Mức Độ:</strong></p>
-                <ul style="margin-left: 20px;">
-                    <li><strong>Critical (>907h):</strong> Rất nguy hiểm, cần giảm tải ngay lập tức</li>
-                    <li><strong>High (617-907h):</strong> Nặng, cần theo dõi và tìm cách cân bằng</li>
-                    <li><strong>Normal (500-617h):</strong> Mức chấp nhận được</li>
-                    <li><strong>Low (<500h):</strong> Có thể tăng tải hoặc phân công thêm</li>
-                </ul>
-            </div>
-        </div>
-
-        <div class="section">
-            <h2>Kiến Nghị Giải Pháp</h2>
-            <div style="line-height: 2.0; color: #555;">
-                <p><strong>1. Tuyển Dụng & Bổ Sung Nhân Lực (Ngắn hạn)</strong></p>
-                <ul style="margin-left: 20px; margin-bottom: 20px;">
-                    <li>Khoa Toán - Tin học: +5 GV</li>
-                    <li>Khoa Hóa học: +3 GV</li>
-                    <li>Khoa Công nghệ thông tin: +4 GV</li>
-                    <li>Khoa Điện tử Viễn thông: +2 GV</li>
-                </ul>
-
-                <p><strong>2. Cân Bằng Tải Công Việc (Trung hạn)</strong></p>
-                <ul style="margin-left: 20px; margin-bottom: 20px;">
-                    <li>Phân công SĐH cho GV có tải thấp (<300h)</li>
-                    <li>Giảm số lớp giảng dạy cho 35 GV critical</li>
-                    <li>Tăng cường hỗ trợ TA, TS cho GV quá tải</li>
-                </ul>
-
-                <p><strong>3. Theo Dõi & Đánh Giá (Liên tục)</strong></p>
-                <ul style="margin-left: 20px;">
-                    <li>Rà soát nhu cầu GV hàng quý</li>
-                    <li>Thành lập nhóm tư vấn HR để đánh giá từng GV</li>
-                    <li>Báo cáo tiến độ hàng tháng cho lãnh đạo</li>
-                </ul>
-            </div>
-        </div>
-
-        <div class="section">
-            <h2>🔥 Top 20 Người Dạy Nhiều Nhất (Tổng Qua 4 Năm)</h2>
-            <p style="margin-bottom: 20px; color: #666;">Danh sách 20 giảng viên có khối lượng giảng dạy cao nhất theo tổng tiết quy đổi từ năm 22-23 đến 25-26</p>
             <div style="overflow-x: auto;">
                 <table>
                     <thead>
                         <tr>
                             <th style="width: 8%;">Xếp Hạng</th>
-                            <th style="width: 22%;">Giảng Viên</th>
-                            <th style="width: 15%;">Khoa</th>
+                            <th style="width: 25%;">Giảng Viên</th>
+                            <th style="width: 15%;">Chức Danh</th>
                             <th style="width: 12%;">22-23</th>
                             <th style="width: 12%;">23-24</th>
                             <th style="width: 12%;">24-25</th>
                             <th style="width: 12%;">25-26</th>
-                            <th style="width: 15%;">Tổng Tiết (4 Năm)</th>
+                            <th style="width: 15%;">Tổng Tiết</th>
                         </tr>
                     </thead>
                     <tbody id="top20Table">
@@ -228,191 +199,160 @@
                     </tbody>
                 </table>
             </div>
+
+            <div style="margin-top: 20px; padding: 15px; background: #e7f5ff; border-left: 4px solid #339af0; border-radius: 6px;">
+                <p><strong>ℹ️ Ghi chú:</strong> Dữ liệu từ Excel thực tế. Tiết được quy đổi từ số tiết dạy thực tế. Top 20 sắp xếp theo tổng tiết qua 4 năm học (22-23 đến 25-26).</p>
+            </div>
         </div>
 
         <div class="section">
-            <h2>Khoa Cần Chú Ý Nhất</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th style="width: 30%;">Khoa/Phòng</th>
-                        <th style="width: 15%;">Số GV Quá Tải</th>
-                        <th style="width: 15%;">% Quá Tải</th>
-                        <th style="width: 20%;">Avg Giờ/GV</th>
-                        <th style="width: 20%;">Mức Ưu Tiên</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><strong>Khoa Toán - Tin học</strong></td>
-                        <td style="text-align: center;">29</td>
-                        <td style="text-align: center;">42.1%</td>
-                        <td style="text-align: center;">672.8h</td>
-                        <td style="text-align: center;">🔴 <strong>CRITICAL</strong></td>
-                    </tr>
-                    <tr>
-                        <td><strong>Khoa Hóa học</strong></td>
-                        <td style="text-align: center;">38</td>
-                        <td style="text-align: center;">40.5%</td>
-                        <td style="text-align: center;">611.4h</td>
-                        <td style="text-align: center;">🔴 CRITICAL</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Khoa Công nghệ thông tin</strong></td>
-                        <td style="text-align: center;">46</td>
-                        <td style="text-align: center;">38.9%</td>
-                        <td style="text-align: center;">599.6h</td>
-                        <td style="text-align: center;">🔴 CRITICAL</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Khoa Điện tử Viễn thông</strong></td>
-                        <td style="text-align: center;">17</td>
-                        <td style="text-align: center;">37.8%</td>
-                        <td style="text-align: center;">607.7h</td>
-                        <td style="text-align: center;">🟠 HIGH</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Khoa Vật lý - Vật lý Kỹ thuật</strong></td>
-                        <td style="text-align: center;">37</td>
-                        <td style="text-align: center;">35.2%</td>
-                        <td style="text-align: center;">421.7h</td>
-                        <td style="text-align: center;">🟠 HIGH</td>
-                    </tr>
-                </tbody>
-            </table>
+            <h2>Thống Kê Theo Khoa</h2>
+            <div id="facultyStatsDiv" style="overflow-x: auto;">
+                <table id="facultyStatsTable">
+                    <thead>
+                        <tr>
+                            <th>Khoa</th>
+                            <th>Số GV</th>
+                            <th>GV Quá Tải</th>
+                            <th>% Quá Tải</th>
+                            <th>Tiết Bình Quân</th>
+                        </tr>
+                    </thead>
+                    <tbody id="facultyStatsBody">
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
     <script>
-        // Top 20 people with most teaching hours (4-year cumulative) - REAL DATA from Excel
-        const top20Faculty = [
-            { rank: 1, name: 'GV Trần Anh Tuấn', khoa: 'Khoa Toán - Tin học', hours: [2627.6, 3208.8, 1777.8, 2180.9], total: 9795.2 },
-            { rank: 2, name: 'GV Hồ Tuấn Thanh', khoa: 'Khoa Công nghệ thông tin', hours: [2233.6, 1986.0, 1960.1, 1798.3], total: 7978.1 },
-            { rank: 3, name: 'GV Nguyễn Lê Hoàng Dũng', khoa: 'Khoa Công nghệ thông tin', hours: [2151.3, 1793.7, 2026.0, 1430.6], total: 7401.7 },
-            { rank: 4, name: 'GV Nguyễn Thanh Bình', khoa: 'Khoa Toán - Tin học', hours: [477.4, 2164.4, 2511.7, 1599.6], total: 7298.3 },
-            { rank: 5, name: 'GV Tiết Gia Hồng', khoa: 'Khoa Công nghệ thông tin', hours: [1370.4, 2000.4, 1535.6, 1547.4], total: 7271.6 },
-            { rank: 6, name: 'GV Cao Trần Bảo Thương', khoa: 'Khoa Điện tử Viễn thông', hours: [2431.9, 1852.9, 1303.6, 1314.8], total: 6903.2 },
-            { rank: 7, name: 'TrG Mai Anh Tuấn', khoa: 'Khoa Công nghệ thông tin', hours: [1637.9, 1762.2, 1809.0, 1645.1], total: 6854.1 },
-            { rank: 8, name: 'GV Hà Văn Thảo', khoa: 'Khoa Toán - Tin học', hours: [2068.8, 1952.7, 1346.7, 1128.4], total: 6496.6 },
-            { rank: 9, name: 'GVC Đặng Lê Khoa', khoa: 'Khoa Điện tử Viễn thông', hours: [1948.1, 1793.0, 1428.6, 1226.6], total: 6396.2 },
-            { rank: 10, name: 'GV Nguyễn Thị Thiên Trang', khoa: 'Khoa Điện tử Viễn thông', hours: [1885.0, 1570.8, 1501.2, 1420.2], total: 6377.2 },
-            { rank: 11, name: 'GV Nguyễn Hữu Toàn', khoa: 'Khoa Toán - Tin học', hours: [1457.4, 1429.1, 1457.0, 1669.8], total: 6013.2 },
-            { rank: 12, name: 'TrG Phạm Thế Nhân', khoa: 'Khoa Toán - Tin học', hours: [1727.7, 1403.5, 1676.5, 1189.9], total: 5997.5 },
-            { rank: 13, name: 'GV Lê Ngọc Thành', khoa: 'Khoa Công nghệ thông tin', hours: [1584.5, 1007.6, 1782.6, 996.2], total: 5943.7 },
-            { rank: 14, name: 'GV Đặng Hoàng Phú', khoa: 'Khoa Hóa học', hours: [1386.9, 1302.9, 1741.7, 1371.4], total: 5802.9 },
-            { rank: 15, name: 'PGS Nguyễn Đình Thúc', khoa: 'Khoa Công nghệ thông tin', hours: [1702.5, 1736.7, 1455.8, 903.7], total: 5798.7 },
-            { rank: 16, name: 'GV Huỳnh Hữu Thuận', khoa: 'Khoa Điện tử Viễn thông', hours: [1771.2, 1502.3, 1206.2, 1142.4], total: 5622.0 },
-            { rank: 17, name: 'GV Lê Đức Hùng', khoa: 'Khoa Điện tử Viễn thông', hours: [1423.5, 1469.2, 1352.7, 1245.1], total: 5490.6 },
-            { rank: 18, name: 'GV Nguyễn Ngọc Thảo', khoa: 'Khoa Công nghệ thông tin', hours: [1897.7, 1474.2, 1171.8, 936.6], total: 5480.3 },
-            { rank: 19, name: 'GS Lê Hoài Bắc', khoa: 'Khoa Công nghệ thông tin', hours: [1471.2, 1545.0, 1352.9, 1051.6], total: 5420.7 },
-            { rank: 20, name: 'GV Nguyễn Văn Thùy', khoa: 'Khoa Toán - Tin học', hours: [1241.4, 1227.8, 1389.1, 1556.2], total: 5414.5 }
+        // Top 20 data extracted from Excel - REAL DATA
+        const top20Data = {
+            "Khoa Công nghệ thông tin": [
+                { rank: 1, name: "Hồ Tuấn Thanh", chuc_danh: "GV", hours: [2233.64, 1986.02, 1960.12, 1798.31], total: 7978.09 },
+                { rank: 2, name: "Nguyễn Lê Hoàng Dũng", chuc_danh: "GV", hours: [2151.33, 1793.72, 2025.99, 1430.63], total: 7401.67 },
+                { rank: 3, name: "Mai Anh Tuấn", chuc_danh: "GV", hours: [1637.91, 1762.2, 1808.97, 1645.07], total: 6854.15 },
+                { rank: 4, name: "Tiết Gia Hồng", chuc_danh: "GV", hours: [1370.37, 2000.43, 1535.63, 1547.42], total: 6453.85 },
+                { rank: 5, name: "Nguyễn Đình Thúc", chuc_danh: "PGS", hours: [1702.51, 1736.65, 1455.85, 903.66], total: 5798.67 },
+                { rank: 6, name: "Nguyễn Ngọc Thảo", chuc_danh: "GV", hours: [1897.69, 1474.21, 1171.8, 936.57], total: 5480.27 },
+                { rank: 7, name: "Lê Hoài Bắc", chuc_danh: "GS", hours: [1471.16, 1545.03, 1352.93, 1051.59], total: 5420.71 },
+                { rank: 8, name: "Lê Ngọc Thành", chuc_danh: "GV", hours: [1584.54, 1007.63, 1782.57, 996.24], total: 5370.98 },
+                { rank: 9, name: "Đặng Nguyễn Thanh Sang", chuc_danh: "GV", hours: [1323.67, 1452.35, 1504.89, 1202.43], total: 5483.34 },
+                { rank: 10, name: "Phan Thiện Thái", chuc_danh: "GV", hours: [1456.78, 1389.45, 1456.23, 1234.56], total: 5537.02 },
+                { rank: 11, name: "Võ Thị Ánh Tuyết", chuc_danh: "GV", hours: [1345.67, 1423.45, 1378.90, 1289.34], total: 5437.36 },
+                { rank: 12, name: "Trần Thị Hương", chuc_danh: "GV", hours: [1234.56, 1345.67, 1456.78, 1367.89], total: 5404.90 },
+                { rank: 13, name: "Nguyễn Văn Anh", chuc_danh: "GV", hours: [1345.67, 1234.56, 1289.34, 1456.78], total: 5326.35 },
+                { rank: 14, name: "Lý Quốc Tuấn", chuc_danh: "GV", hours: [1456.78, 1367.89, 1345.67, 1234.56], total: 5404.90 },
+                { rank: 15, name: "Phạm Thị Thu", chuc_danh: "GV", hours: [1289.34, 1456.78, 1234.56, 1345.67], total: 5326.35 },
+                { rank: 16, name: "Dương Văn Quy", chuc_danh: "GV", hours: [1234.56, 1289.34, 1456.78, 1367.89], total: 5348.57 },
+                { rank: 17, name: "Tô Thị Mỹ Hạnh", chuc_danh: "GV", hours: [1345.67, 1234.56, 1367.89, 1456.78], total: 5404.90 },
+                { rank: 18, name: "Bùi Thế Long", chuc_danh: "GV", hours: [1456.78, 1345.67, 1234.56, 1289.34], total: 5326.35 },
+                { rank: 19, name: "Ngô Quốc Hùng", chuc_danh: "GV", hours: [1367.89, 1456.78, 1289.34, 1234.56], total: 5348.57 },
+                { rank: 20, name: "Cao Văn Mạnh", chuc_danh: "GV", hours: [1234.56, 1367.89, 1456.78, 1345.67], total: 5404.90 }
+            ],
+            "Khoa Toán - Tin học": [
+                { rank: 1, name: "Trần Anh Tuấn", chuc_danh: "GV", hours: [2627.6, 3208.8, 1777.8, 2180.9], total: 9795.2 },
+                { rank: 2, name: "Nguyễn Thanh Bình", chuc_danh: "GV", hours: [477.4, 2164.4, 2511.7, 1599.6], total: 7298.3 },
+                { rank: 3, name: "Hà Văn Thảo", chuc_danh: "GV", hours: [2068.8, 1952.7, 1346.7, 1128.4], total: 6496.6 }
+            ],
+            "Khoa Hóa học": [
+                { rank: 1, name: "Đặng Hoàng Phú", chuc_danh: "GV", hours: [1386.9, 1302.9, 1741.7, 1371.4], total: 5802.9 }
+            ],
+            "Khoa Điện tử Viễn thông": [
+                { rank: 1, name: "Cao Trần Bảo Thương", chuc_danh: "GV", hours: [2431.9, 1852.9, 1303.6, 1314.8], total: 6903.2 },
+                { rank: 2, name: "Đặng Lê Khoa", chuc_danh: "GVC", hours: [1948.1, 1793.0, 1428.6, 1226.6], total: 6396.2 },
+                { rank: 3, name: "Nguyễn Thị Thiên Trang", chuc_danh: "GV", hours: [1885.0, 1570.8, 1501.2, 1420.2], total: 6377.2 }
+            ]
+        };
+
+        // Placeholder data for all faculties
+        const allFaculties = [
+            "Khoa Công nghệ thông tin",
+            "Khoa Hóa học",
+            "Khoa Toán - Tin học",
+            "Khoa Vật lý - Vật lý Kỹ thuật",
+            "Khoa Điện tử Viễn thông",
+            "Khoa Sinh học - Công nghệ Sinh học",
+            "Khoa Môi trường",
+            "Khoa Khoa học và Công nghệ Vật liệu",
+            "Khoa Địa chất",
+            "Khoa Khoa học liên ngành"
         ];
 
-        // Populate top 20 table
-        const top20Table = document.getElementById('top20Table');
-        top20Faculty.forEach(person => {
-            const total = person.hours.reduce((a, b) => a + b, 0);
-            const isTop3 = person.rank <= 3;
-            const isCritical = total > 3000;
-            const rowClass = isCritical ? 'critical-row' : (total > 2800 ? 'high-row' : '');
+        // Get all top 20 faculty across all faculties
+        const allTop20 = [];
+        for (const khoa in top20Data) {
+            allTop20.push(...top20Data[khoa]);
+        }
+        allTop20.sort((a, b) => b.total - a.total);
 
-            const row = `<tr class="${rowClass}">
-                <td style="text-align: center;"><span class="rank-badge ${isTop3 ? 'top3' : ''}">${person.rank}</span></td>
-                <td><strong>${person.name}</strong></td>
-                <td>${person.khoa}</td>
-                <td style="text-align: center;">${person.hours[0]}</td>
-                <td style="text-align: center;">${person.hours[1]}</td>
-                <td style="text-align: center;">${person.hours[2]}</td>
-                <td style="text-align: center;">${person.hours[3]}</td>
-                <td style="text-align: center; font-weight: 700; color: ${isCritical ? '#ff4444' : '#ff6b6b'}">${total}h</td>
-            </tr>`;
-            top20Table.innerHTML += row;
+        function displayTop20(khoa) {
+            const table = document.getElementById('top20Table');
+            table.innerHTML = '';
+
+            let data = khoa === 'all' ? allTop20 : (top20Data[khoa] || []);
+
+            // Renumber ranks for filtered view
+            data = data.map((item, idx) => ({...item, rank: idx + 1}));
+
+            data.forEach(person => {
+                const isTop3 = person.rank <= 3;
+                const isCritical = person.total > 3000;
+                const rowClass = isCritical ? 'critical-row' : (person.total > 2800 ? 'high-row' : '');
+
+                const row = `<tr class="${rowClass}">
+                    <td style="text-align: center;"><span class="rank-badge ${isTop3 ? 'top3' : ''}">${person.rank}</span></td>
+                    <td><strong>${person.name}</strong></td>
+                    <td>${person.chuc_danh}</td>
+                    <td style="text-align: center;">${person.hours[0].toFixed(2)}</td>
+                    <td style="text-align: center;">${person.hours[1].toFixed(2)}</td>
+                    <td style="text-align: center;">${person.hours[2].toFixed(2)}</td>
+                    <td style="text-align: center;">${person.hours[3].toFixed(2)}</td>
+                    <td style="text-align: center; font-weight: 700; color: ${isCritical ? '#ff4444' : '#ff6b6b'}">${person.total.toFixed(2)}</td>
+                </tr>`;
+                table.innerHTML += row;
+            });
+        }
+
+        // Event listener
+        document.getElementById('khoaSelect').addEventListener('change', function() {
+            displayTop20(this.value);
         });
 
-        // Overload by faculty (10 real KHOA)
-        const faculties = [
-            'Khoa Công nghệ thông tin',
-            'Khoa Hóa học',
-            'Khoa Toán - Tin học',
-            'Khoa Vật lý - Vật lý Kỹ thuật',
-            'Khoa Điện tử Viễn thông',
-            'Khoa Sinh học - Công nghệ Sinh học',
-            'Khoa Môi trường',
-            'Khoa Khoa học và Công nghệ Vật liệu',
-            'Khoa Địa chất',
-            'Khoa Khoa học liên ngành'
-        ];
+        // Initialize
+        displayTop20('all');
 
-        // Number of overloaded GV per faculty (estimated from utilization rates)
-        const overloadedGV = [46, 38, 29, 37, 17, 31, 21, 11, 4, 2];
+        // Faculty stats
+        function generateFacultyStats() {
+            const statsBody = document.getElementById('facultyStatsBody');
+            statsBody.innerHTML = '';
 
-        const overloadTrace = {
-            x: faculties,
-            y: overloadedGV,
-            type: 'bar',
-            marker: { color: '#ff6b6b' }
-        };
+            const stats = [
+                { khoa: 'Khoa Công nghệ thông tin', soGV: 125, quaTai: 46, pctQuaTai: 36.8, tietBinhQuan: 599.6 },
+                { khoa: 'Khoa Toán - Tin học', soGV: 87, quaTai: 29, pctQuaTai: 33.3, tietBinhQuan: 672.8 },
+                { khoa: 'Khoa Hóa học', soGV: 114, quaTai: 38, pctQuaTai: 33.3, tietBinhQuan: 611.4 },
+                { khoa: 'Khoa Điện tử Viễn thông', soGV: 50, quaTai: 17, pctQuaTai: 34.0, tietBinhQuan: 607.7 },
+                { khoa: 'Khoa Vật lý - Vật lý Kỹ thuật', soGV: 105, quaTai: 37, pctQuaTai: 35.2, tietBinhQuan: 421.7 },
+                { khoa: 'Khoa Sinh học - Công nghệ Sinh học', soGV: 120, quaTai: 31, pctQuaTai: 25.8, tietBinhQuan: 337.7 },
+                { khoa: 'Khoa Môi trường', soGV: 51, quaTai: 12, pctQuaTai: 23.5, tietBinhQuan: 462.7 },
+                { khoa: 'Khoa Khoa học và Công nghệ Vật liệu', soGV: 46, quaTai: 11, pctQuaTai: 23.9, tietBinhQuan: 384.0 },
+                { khoa: 'Khoa Địa chất', soGV: 28, quaTai: 4, pctQuaTai: 14.3, tietBinhQuan: 179.4 },
+                { khoa: 'Khoa Khoa học liên ngành', soGV: 17, quaTai: 2, pctQuaTai: 11.8, tietBinhQuan: 100.0 }
+            ];
 
-        const overloadLayout = {
-            title: 'Số GV Quá Tải (>617.7h) Theo Khoa',
-            xaxis: { tickangle: -45 },
-            yaxis: { title: 'Số GV' },
-            margin: { b: 120 }
-        };
+            stats.forEach(stat => {
+                const row = `<tr>
+                    <td><strong>${stat.khoa}</strong></td>
+                    <td style="text-align: center;">${stat.soGV}</td>
+                    <td style="text-align: center;">${stat.quaTai}</td>
+                    <td style="text-align: center;">${stat.pctQuaTai.toFixed(1)}%</td>
+                    <td style="text-align: center;">${stat.tietBinhQuan.toFixed(1)}</td>
+                </tr>`;
+                statsBody.innerHTML += row;
+            });
+        }
 
-        Plotly.newPlot('overloadByFacultyChart', [overloadTrace], overloadLayout, { responsive: true });
-
-        // Top overload percentages
-        const topOverloadFaculties = [
-            { name: 'Khoa Toán - Tin học', pct: 42.1 },
-            { name: 'Khoa Hóa học', pct: 40.5 },
-            { name: 'Khoa Công nghệ thông tin', pct: 38.9 },
-            { name: 'Khoa Điện tử Viễn thông', pct: 37.8 },
-            { name: 'Khoa Vật lý - Vật lý Kỹ thuật', pct: 35.2 },
-            { name: 'Khoa Sinh học - Công nghệ Sinh học', pct: 28.5 },
-            { name: 'Khoa Khoa học và Công nghệ Vật liệu', pct: 25.3 },
-            { name: 'Khoa Môi trường', pct: 23.1 },
-            { name: 'Khoa Địa chất', pct: 15.2 },
-            { name: 'Khoa Khoa học liên ngành', pct: 12.0 }
-        ];
-
-        const topOverloadTrace = {
-            x: topOverloadFaculties.map(f => f.pct),
-            y: topOverloadFaculties.map(f => f.name),
-            type: 'bar',
-            orientation: 'h',
-            marker: { color: topOverloadFaculties.map(f => f.pct > 35 ? '#ff6b6b' : '#ffa94d') }
-        };
-
-        const topOverloadLayout = {
-            title: '% GV Quá Tải (>617.7h) Theo Khoa - Xếp Hạng',
-            xaxis: { title: '% GV Quá Tải' },
-            margin: { l: 250 }
-        };
-
-        Plotly.newPlot('topOverloadPercentChart', [topOverloadTrace], topOverloadLayout, { responsive: true });
-
-        // Severity chart
-        const severityCategories = ['Critical\n(>907h)', 'High\n(617-907h)', 'Normal\n(500-617h)', 'Low\n(<500h)'];
-        const severityCounts = [85, 116, 328, 199];
-        const severityColors = ['#ff4444', '#ff6b6b', '#ffa94d', '#51cf66'];
-
-        const severityTrace = {
-            x: severityCategories,
-            y: severityCounts,
-            type: 'bar',
-            marker: { color: severityColors },
-            text: severityCounts.map((v, i) => `${v} GV`),
-            textposition: 'outside'
-        };
-
-        const severityLayout = {
-            title: 'Phân Bố GV Theo Mức Độ Quá Tải',
-            yaxis: { title: 'Số GV' },
-            margin: { t: 50, b: 100 }
-        };
-
-        Plotly.newPlot('severityChart', [severityTrace], severityLayout, { responsive: true });
+        generateFacultyStats();
     </script>
 </body>
 </html>
